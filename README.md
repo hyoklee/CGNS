@@ -97,6 +97,7 @@ standard and software see:
     https://cgns.github.io/governance/committee.html#distribution
 
 ## Development
+
 CGNS exists thanks to the contribution of many people.
 CGNS employs a gitflow branching model, which is summarized as follows [^1]:
 
