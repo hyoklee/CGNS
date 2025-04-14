@@ -410,6 +410,17 @@ if (CGNS_ENABLE_HDF5)
 			    INTERFACE_COMPILE_DEFINITIONS H5_BUILT_AS_STATIC_LIB)
     endif()
   endif ()
+
+  # If HDF5 needs ZLIB, a ZLIB:ZLIB target interface can pop up for hdf5
+  get_target_property(check_hdf5_link_defs hdf5-${CG_HDF5_LINK_TYPE} INTERFACE_LINK_LIBRARIES)
+  if (check_hdf5_link_defs)
+     if ("$<LINK_ONLY:ZLIB::ZLIB>" IN_LIST check_hdf5_link_defs)
+        # ZLIB_ROOT could be set outside
+        # ZLIB_USE_STATIC_LIBS could be set outside
+        find_package(ZLIB)
+     endif()
+  endif()
+
 else ()
   mark_as_advanced(FORCE HDF5_NEED_ZLIB HDF5_NEED_SZIP HDF5_NEED_MPI)
   mark_as_advanced(FORCE ZLIB_LIBRARY SZIP_LIBRARY)
