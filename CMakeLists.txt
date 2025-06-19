@@ -28,7 +28,11 @@ file (READ ${PROJECT_SOURCE_DIR}/src/cgnslib.h _cgnslib_h_contents)
 string (REGEX REPLACE ".*#define[ \t]+CGNS_DOTVERS[ \t]+([0-9]*)\\.([0-9])[0-9]*.*$"
     "\\1.\\2" CGNS_VERSION ${_cgnslib_h_contents})
 
+set(CGNS_PACKAGE "cgns")
+set(CGNS_PACKAGE_NAME "CGNS")
+
 # Allow for building a package
+set(CPACK_PACKAGE_NAME "${CGNS_PACKAGE_NAME}")
 set(CPACK_PACKAGE_VERSION "${CGNS_VERSION}")
 set(CPACK_PACKAGE_INSTALL_DIRECTORY "cgns-${CGNS_VERSION}")
 set(CPACK_GENERATOR "STGZ;TGZ;ZIP")
@@ -90,6 +94,12 @@ set(CGNS_INSTALL_TOOLS_DATADIR "${CMAKE_INSTALL_DATADIR}${install_suffix}" CACHE
     "CGNS: arch independent tools data install location")
 
 set(CGNS_BUILD_SHARED "ON" CACHE BOOL "Build a shared version of the library")
+# useful to write cmake config.
+set(CGNS_ENABLE_SHARED_LIB NO)
+set(CGNS_ENABLE_STATIC_LIB YES)
+if (CGNS_BUILD_SHARED)
+  set(CGNS_ENABLE_SHARED_LIB YES)
+endif()
 
 if (CGNS_ENABLE_LEGACY)
   set(CGNS_ENABLE_64BIT "OFF")
@@ -425,6 +435,21 @@ else ()
   set(CGNS_ENABLE_PARALLEL "OFF")
   mark_as_advanced(FORCE CGNS_ENABLE_PARALLEL)
 endif ()
+
+####################################
+# Display CMake HDF5 configuration #
+####################################
+if ((NOT CGNS_BUILD_SHARED) AND CGNS_ENABLE_HDF5 AND (CG_HDF5_LINK_TYPE STREQUAL "shared"))
+  message(STATUS "")
+  message(STATUS "=== CGNS Build Configuration Notice ===")
+  message(STATUS "CGNS: Building static CGNS  library with shared HDF5")
+  message(STATUS "Applications using CGNS will need:")
+  message(STATUS "  1. HDF5 shared libraries available at runtime")
+  message(STATUS "  2. Proper RPATH/LD_LIBRARY_PATH configuration")
+  message(STATUS "  3. find_package(CGNS::cgns_static) in the application's CMakeLists.txt")
+  message(STATUS "=====================================")
+  message(STATUS "")
+endif()
 
 ####################
 # RPATH Management #
