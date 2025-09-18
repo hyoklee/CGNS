@@ -1,212 +1,22 @@
 [
   {
-    "name": "Test 1: Small Mesh Test (32K elements, 2 processes) - Grid Coordinates Write",
-    "unit": "seconds",
-    "value": 0.045
-  },
-  {
-    "name": "Test 1: Small Mesh Test (32K elements, 2 processes) - Element Connectivity Write",
-    "unit": "seconds",
-    "value": 0.032
-  },
-  {
-    "name": "Test 1: Small Mesh Test (32K elements, 2 processes) - Flow Solution Write",
-    "unit": "seconds",
-    "value": 0.025
-  },
-  {
-    "name": "Test 1: Small Mesh Test (32K elements, 2 processes) - Total Write Time",
-    "unit": "seconds",
-    "value": 0.102
-  },
-  {
-    "name": "Test 1: Small Mesh Test (32K elements, 2 processes) - File Size",
-    "unit": "MB",
-    "value": 11.5
-  },
-  {
-    "name": "Test 1: Small Mesh Test (32K elements, 2 processes) - Write Performance",
-    "unit": "MB/s",
-    "value": 112.7
-  },
-  {
-    "name": "Test 1: Small Mesh Test (32K elements, 2 processes) - Elements Processed",
+    "name": "Test 1: Small Mesh Test (32K elements, serial) - Elements Processed",
     "unit": "elements",
-    "value": 32768.0
+    "value": 32000.0
   },
   {
-    "name": "Test 2: Medium Mesh Test (128K elements, 2 processes) - Grid Coordinates Write",
-    "unit": "seconds",
-    "value": 0.178
-  },
-  {
-    "name": "Test 2: Medium Mesh Test (128K elements, 2 processes) - Element Connectivity Write",
-    "unit": "seconds",
-    "value": 0.125
-  },
-  {
-    "name": "Test 2: Medium Mesh Test (128K elements, 2 processes) - Flow Solution Write",
-    "unit": "seconds",
-    "value": 0.098
-  },
-  {
-    "name": "Test 2: Medium Mesh Test (128K elements, 2 processes) - Total Write Time",
-    "unit": "seconds",
-    "value": 0.401
-  },
-  {
-    "name": "Test 2: Medium Mesh Test (128K elements, 2 processes) - File Size",
-    "unit": "MB",
-    "value": 45.2
-  },
-  {
-    "name": "Test 2: Medium Mesh Test (128K elements, 2 processes) - Write Performance",
-    "unit": "MB/s",
-    "value": 112.7
-  },
-  {
-    "name": "Test 2: Medium Mesh Test (128K elements, 2 processes) - Elements Processed",
+    "name": "Test 2: Medium Mesh Test (128K elements, serial) - Elements Processed",
     "unit": "elements",
-    "value": 131072.0
+    "value": 128000.0
   },
   {
-    "name": "Test 3: Large Mesh Test (512K elements, 2 processes) - Grid Coordinates Write",
-    "unit": "seconds",
-    "value": 0.712
-  },
-  {
-    "name": "Test 3: Large Mesh Test (512K elements, 2 processes) - Element Connectivity Write",
-    "unit": "seconds",
-    "value": 0.501
-  },
-  {
-    "name": "Test 3: Large Mesh Test (512K elements, 2 processes) - Flow Solution Write",
-    "unit": "seconds",
-    "value": 0.392
-  },
-  {
-    "name": "Test 3: Large Mesh Test (512K elements, 2 processes) - Total Write Time",
-    "unit": "seconds",
-    "value": 1.605
-  },
-  {
-    "name": "Test 3: Large Mesh Test (512K elements, 2 processes) - File Size",
-    "unit": "MB",
-    "value": 180.8
-  },
-  {
-    "name": "Test 3: Large Mesh Test (512K elements, 2 processes) - Write Performance",
-    "unit": "MB/s",
-    "value": 112.6
-  },
-  {
-    "name": "Test 3: Large Mesh Test (512K elements, 2 processes) - Elements Processed",
+    "name": "Test 3: Large Mesh Test (512K elements, serial) - Elements Processed",
     "unit": "elements",
-    "value": 524288.0
+    "value": 512000.0
   },
   {
-    "name": "Test 4: Independent I/O Mode Test (128K elements, 2 processes) - Grid Coordinates Write",
-    "unit": "seconds",
-    "value": 0.185
-  },
-  {
-    "name": "Test 4: Independent I/O Mode Test (128K elements, 2 processes) - Element Connectivity Write",
-    "unit": "seconds",
-    "value": 0.132
-  },
-  {
-    "name": "Test 4: Independent I/O Mode Test (128K elements, 2 processes) - Flow Solution Write",
-    "unit": "seconds",
-    "value": 0.105
-  },
-  {
-    "name": "Test 4: Independent I/O Mode Test (128K elements, 2 processes) - Total Write Time",
-    "unit": "seconds",
-    "value": 0.422
-  },
-  {
-    "name": "Test 4: Independent I/O Mode Test (128K elements, 2 processes) - File Size",
-    "unit": "MB",
-    "value": 45.2
-  },
-  {
-    "name": "Test 4: Independent I/O Mode Test (128K elements, 2 processes) - Write Performance",
-    "unit": "MB/s",
-    "value": 107.1
-  },
-  {
-    "name": "Test 4: Independent I/O Mode Test (128K elements, 2 processes) - Elements Processed",
+    "name": "Test 4: Very Large Mesh Test (1M elements, serial) - Elements Processed",
     "unit": "elements",
-    "value": 131072.0
-  },
-  {
-    "name": "Test 5: Multi-dataset API Test (128K elements, 2 processes) - Grid Coordinates Write",
-    "unit": "seconds",
-    "value": 0.172
-  },
-  {
-    "name": "Test 5: Multi-dataset API Test (128K elements, 2 processes) - Element Connectivity Write",
-    "unit": "seconds",
-    "value": 0.119
-  },
-  {
-    "name": "Test 5: Multi-dataset API Test (128K elements, 2 processes) - Flow Solution Write",
-    "unit": "seconds",
-    "value": 0.095
-  },
-  {
-    "name": "Test 5: Multi-dataset API Test (128K elements, 2 processes) - Total Write Time",
-    "unit": "seconds",
-    "value": 0.386
-  },
-  {
-    "name": "Test 5: Multi-dataset API Test (128K elements, 2 processes) - File Size",
-    "unit": "MB",
-    "value": 45.2
-  },
-  {
-    "name": "Test 5: Multi-dataset API Test (128K elements, 2 processes) - Write Performance",
-    "unit": "MB/s",
-    "value": 117.1
-  },
-  {
-    "name": "Test 5: Multi-dataset API Test (128K elements, 2 processes) - Elements Processed",
-    "unit": "elements",
-    "value": 131072.0
-  },
-  {
-    "name": "Test 6: 4 Processes Test (256K elements) - Grid Coordinates Write",
-    "unit": "seconds",
-    "value": 0.365
-  },
-  {
-    "name": "Test 6: 4 Processes Test (256K elements) - Element Connectivity Write",
-    "unit": "seconds",
-    "value": 0.258
-  },
-  {
-    "name": "Test 6: 4 Processes Test (256K elements) - Flow Solution Write",
-    "unit": "seconds",
-    "value": 0.201
-  },
-  {
-    "name": "Test 6: 4 Processes Test (256K elements) - Total Write Time",
-    "unit": "seconds",
-    "value": 0.824
-  },
-  {
-    "name": "Test 6: 4 Processes Test (256K elements) - File Size",
-    "unit": "MB",
-    "value": 90.4
-  },
-  {
-    "name": "Test 6: 4 Processes Test (256K elements) - Write Performance",
-    "unit": "MB/s",
-    "value": 109.7
-  },
-  {
-    "name": "Test 6: 4 Processes Test (256K elements) - Elements Processed",
-    "unit": "elements",
-    "value": 262144.0
+    "value": 1000000.0
   }
 ]
