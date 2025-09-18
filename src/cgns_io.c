@@ -51,11 +51,9 @@ freely, subject to the following restrictions:
 #endif
 #if CG_BUILD_HDF5
 #include "adfh/ADFH.h"
-#if CG_BUILD_PARALLEL
 #include "hdf5.h"
 #endif
 #include "cgio_internal_type.h" /* for cgns_io_ctx_t */
-#endif
 
 #ifdef MEM_DEBUG
 #include "cg_malloc.h"
