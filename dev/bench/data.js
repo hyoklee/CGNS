@@ -31,19 +31,9 @@ window.BENCHMARK_DATA = {
             "unit": "elements"
           },
           {
-            "name": "Test 1: Small Mesh Test (32K elements, 2 processes) - Process Count",
-            "value": 2,
-            "unit": "processes"
-          },
-          {
             "name": "Test 2: Medium Mesh Test (128K elements, 2 processes) - Elements Processed",
             "value": 128000,
             "unit": "elements"
-          },
-          {
-            "name": "Test 2: Medium Mesh Test (128K elements, 2 processes) - Process Count",
-            "value": 2,
-            "unit": "processes"
           },
           {
             "name": "Test 3: Large Mesh Test (512K elements, 2 processes) - Elements Processed",
@@ -51,19 +41,9 @@ window.BENCHMARK_DATA = {
             "unit": "elements"
           },
           {
-            "name": "Test 3: Large Mesh Test (512K elements, 2 processes) - Process Count",
-            "value": 2,
-            "unit": "processes"
-          },
-          {
             "name": "Test 4: Independent I/O Mode Test (128K elements, 2 processes) - Elements Processed",
             "value": 128000,
             "unit": "elements"
-          },
-          {
-            "name": "Test 4: Independent I/O Mode Test (128K elements, 2 processes) - Process Count",
-            "value": 2,
-            "unit": "processes"
           },
           {
             "name": "Test 5: Multi-dataset API Test (128K elements, 2 processes) - Elements Processed",
@@ -71,19 +51,9 @@ window.BENCHMARK_DATA = {
             "unit": "elements"
           },
           {
-            "name": "Test 5: Multi-dataset API Test (128K elements, 2 processes) - Process Count",
-            "value": 2,
-            "unit": "processes"
-          },
-          {
             "name": "Test 6: 4 Processes Test (256K elements) - Elements Processed",
             "value": 256000,
             "unit": "elements"
-          },
-          {
-            "name": "Test 6: 4 Processes Test (256K elements) - Process Count",
-            "value": 4,
-            "unit": "processes"
           }
         ]
       }
