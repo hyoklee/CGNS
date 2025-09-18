@@ -24,7 +24,6 @@ jobs:
         sudo apt-get update
         sudo apt-get install -y \
           openmpi-bin openmpi-common libopenmpi-dev \
-          libhdf5-mpi-dev libhdf5-openmpi-dev \
           python3-pip build-essential cmake \
           zlib1g-dev libcurl4-openssl-dev \
           autotools-dev autoconf automake libtool \
@@ -82,7 +81,7 @@ jobs:
         key: hdf5-${{ steps.hdf5-hash.outputs.hash }}-zlib-${{ runner.os }}
 
     - name: Build HDF5
-      if: steps.cache-hdf5.outputs.cache-hit != 'true' && steps.check-hash.outputs.skip_tests != 'true'
+#      if: steps.cache-hdf5.outputs.cache-hit != 'true' && steps.check-hash.outputs.skip_tests != 'true'
       run: |
         cd hdf5
         mkdir build
@@ -108,7 +107,7 @@ jobs:
         key: cgns-${{ github.sha }}-hdf5-${{ steps.hdf5-hash.outputs.hash }}-${{ runner.os }}
 
     - name: Configure CGNS
-      if: steps.cache-cgns.outputs.cache-hit != 'true' && steps.check-hash.outputs.skip_tests != 'true'
+#      if: steps.cache-cgns.outputs.cache-hit != 'true' && steps.check-hash.outputs.skip_tests != 'true'
       run: |
         export HDF5_DIR=$HOME/hdf5-install
         export CPPFLAGS="-I$HOME/hdf5-install/include"
@@ -138,7 +137,7 @@ jobs:
         grep -E "(CGNS_ENABLE_|PARALLEL|MPI|HDF5)" CMakeCache.txt || echo "No relevant config found"
 
     - name: Build CGNS
-      if: steps.cache-cgns.outputs.cache-hit != 'true' && steps.check-hash.outputs.skip_tests != 'true'
+#      if: steps.cache-cgns.outputs.cache-hit != 'true' && steps.check-hash.outputs.skip_tests != 'true'
       run: |
         export LD_LIBRARY_PATH="$HOME/hdf5-install/lib:$LD_LIBRARY_PATH"
         cd build
