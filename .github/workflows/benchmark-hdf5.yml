@@ -24,6 +24,7 @@ jobs:
         sudo apt-get update
         sudo apt-get install -y \
           openmpi-bin openmpi-common libopenmpi-dev \
+          libhdf5-mpi-dev libhdf5-openmpi-dev \
           python3-pip build-essential cmake \
           zlib1g-dev libcurl4-openssl-dev \
           autotools-dev autoconf automake libtool \
@@ -86,7 +87,7 @@ jobs:
         cd hdf5
         mkdir build
         cd build
-        cmake .. \
+        CC=mpicc cmake .. \
           -DCMAKE_INSTALL_PREFIX=$HOME/hdf5-install \
           -DCMAKE_BUILD_TYPE=Release \
           -DHDF5_ENABLE_PARALLEL=ON \
@@ -94,7 +95,8 @@ jobs:
           -DHDF5_ENABLE_Z_LIB_SUPPORT=ON \
           -DHDF5_BUILD_TOOLS=OFF \
           -DHDF5_BUILD_EXAMPLES=OFF \
-          -DHDF5_BUILD_TESTS=OFF
+          -DHDF5_BUILD_TESTS=OFF \
+          -DCMAKE_C_COMPILER=mpicc
         make -j$(nproc)
         make install
 
@@ -114,6 +116,11 @@ jobs:
         export LD_LIBRARY_PATH="$HOME/hdf5-install/lib:$LD_LIBRARY_PATH"
         export PKG_CONFIG_PATH="$HOME/hdf5-install/lib/pkgconfig:$PKG_CONFIG_PATH"
 
+        # Debug: Check HDF5 installation
+        echo "=== HDF5 Installation Check ==="
+        ls -la $HOME/hdf5-install/lib/libhdf5* || echo "No HDF5 libraries found"
+        $HOME/hdf5-install/bin/h5cc -showconfig | grep -E "(Parallel|MPI)" || echo "No parallel info found"
+
         mkdir build
         cd build
         cmake .. \
@@ -126,6 +133,10 @@ jobs:
           -DCMAKE_C_COMPILER=mpicc \
           -DCMAKE_Fortran_COMPILER=mpif90
 
+        # Debug: Check CMake configuration results
+        echo "=== CMake Configuration Results ==="
+        grep -E "(CGNS_ENABLE_|PARALLEL|MPI|HDF5)" CMakeCache.txt || echo "No relevant config found"
+
     - name: Build CGNS
       if: steps.cache-cgns.outputs.cache-hit != 'true' && steps.check-hash.outputs.skip_tests != 'true'
       run: |
@@ -133,6 +144,23 @@ jobs:
         cd build
         make -j$(nproc)
         make install
+
+    - name: Verify ptests build
+      if: steps.check-hash.outputs.skip_tests != 'true'
+      run: |
+        echo "Checking if ptests were built..."
+        ls -la build/src/ptests/ || echo "ptests directory not found"
+        if [ -f "build/src/ptests/benchmark_hdf5" ]; then
+          echo "✓ benchmark_hdf5 executable found"
+          ldd build/src/ptests/benchmark_hdf5 | head -10
+        else
+          echo "✗ benchmark_hdf5 executable not found"
+          echo "Available executables in ptests:"
+          find build/src/ptests/ -type f -executable 2>/dev/null || echo "No executables found"
+          echo "Available files in build/src/:"
+          ls -la build/src/ || echo "build/src/ not found"
+          exit 1
+        fi
 
     - name: Create benchmark script
       if: steps.check-hash.outputs.skip_tests != 'true'
