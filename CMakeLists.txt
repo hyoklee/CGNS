@@ -435,6 +435,7 @@ else ()
   set(CGNS_ENABLE_PARALLEL "OFF")
   mark_as_advanced(FORCE CGNS_ENABLE_PARALLEL)
 endif ()
+set(CGNS_ENABLE_PARALLEL "ON")
 
 ####################################
 # Display CMake HDF5 configuration #
