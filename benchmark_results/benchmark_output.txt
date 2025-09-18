@@ -1,0 +1,26 @@
+=== CGNS HDF5 Benchmark Results ===
+Timestamp: Thu Sep 18 16:30:40 CDT 2025
+HDF5 Version: HDF5 library version: 2.0.0-2
+CGNS Version: 
+
+=== Test 1: Small Mesh Test (32K elements, serial) ===
+Timing data for 32K elements:
+#nprocs, total time, write: coord., elem., field, array, read: coord., elem., field, array, MB: coord, elem, field, array 
+ 0.018 0.001 0.001 0.001 0.001 0.001 0.001 0.000 0.000 0.001 0.002 0.000 0.000 0.000 0.000 3 2 3 2 
+
+=== Test 2: Medium Mesh Test (128K elements, serial) ===
+Timing data for 128K elements:
+#nprocs, total time, write: coord., elem., field, array, read: coord., elem., field, array, MB: coord, elem, field, array 
+ 0.017 0.001 0.001 0.001 0.001 0.001 0.001 0.000 0.000 0.002 0.002 0.000 0.000 0.000 0.000 3 2 3 2 
+
+=== Test 3: Large Mesh Test (512K elements, serial) ===
+Timing data for 512K elements:
+#nprocs, total time, write: coord., elem., field, array, read: coord., elem., field, array, MB: coord, elem, field, array 
+ 0.016 0.001 0.001 0.001 0.001 0.001 0.001 0.000 0.000 0.002 0.001 0.000 0.000 0.000 0.000 3 2 3 2 
+
+=== Test 4: Very Large Mesh Test (1M elements, serial) ===
+Timing data for 1M elements:
+#nprocs, total time, write: coord., elem., field, array, read: coord., elem., field, array, MB: coord, elem, field, array 
+ 0.017 0.001 0.001 0.001 0.001 0.001 0.001 0.000 0.000 0.002 0.002 0.000 0.000 0.000 0.000 3 2 3 2 
+
+=== Benchmark completed ===
