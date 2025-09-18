@@ -56,13 +56,19 @@ def parse_cgns_output(filename):
         # 2. Summary from timing.dat files
 
         # Look for timing patterns in the benchmark output
-        # CGNS benchmark typically shows timing for different operations:
-        # - Total program time
-        # - Write operations (coordinates, elements, fields, arrays)
-        # - Read operations (coordinates, elements, fields, arrays)
+        # New format shows timing for different operations:
+        # - Grid coordinates written in X.XXX seconds
+        # - Element connectivity written in X.XXX seconds
+        # - Flow solution written in X.XXX seconds
+        # - Total write time: X.XXX seconds
+        # - Write performance: X.X MB/s
 
         # Extract timing data for various operations
         timing_patterns = {
+            'Grid Coordinates Write': r'Grid coordinates written in ([\d.]+) seconds',
+            'Element Connectivity Write': r'Element connectivity written in ([\d.]+) seconds',
+            'Flow Solution Write': r'Flow solution written in ([\d.]+) seconds',
+            'Total Write Time': r'Total write time: ([\d.]+) seconds',
             'Total Time': r'Total Time to Run Program[^:]*:\s*([\d.]+)s',
             'Write Coordinates': r'Time to Write Coordinates[^:]*:\s*([\d.]+)s',
             'Write Elements': r'Time to Write Elements[^:]*:\s*([\d.]+)s',
@@ -86,8 +92,9 @@ def parse_cgns_output(filename):
                     "value": timing_value
                 })
 
-        # Also look for data size information
+        # Also look for file size and performance information
         size_patterns = {
+            'File Size': r'File size: ([\d.]+) MB',
             'Coordinate Data': r'(\d+)\s+MB.*coord',
             'Element Data': r'(\d+)\s+MB.*elem',
             'Field Data': r'(\d+)\s+MB.*field',
@@ -99,9 +106,24 @@ def parse_cgns_output(filename):
             if matches:
                 size_value = float(matches[-1])
                 results.append({
-                    "name": f"{test_name} - {metric_name} Size",
+                    "name": f"{test_name} - {metric_name}",
                     "unit": "MB",
                     "value": size_value
+                })
+
+        # Look for performance metrics (MB/s)
+        perf_patterns = {
+            'Write Performance': r'Write performance: ([\d.]+) MB/s'
+        }
+
+        for metric_name, pattern in perf_patterns.items():
+            matches = re.findall(pattern, section, re.IGNORECASE)
+            if matches:
+                perf_value = float(matches[-1])
+                results.append({
+                    "name": f"{test_name} - {metric_name}",
+                    "unit": "MB/s",
+                    "value": perf_value
                 })
 
         # Look for number of elements/nodes processed

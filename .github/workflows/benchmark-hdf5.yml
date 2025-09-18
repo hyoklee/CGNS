@@ -145,6 +145,14 @@ jobs:
         export CGNS_DIR=$HOME/cgns-install
         export LD_LIBRARY_PATH="$HOME/hdf5-install/lib:$HOME/cgns-install/lib:$LD_LIBRARY_PATH"
 
+        # Find the benchmark executable
+        BENCHMARK_EXE="$(pwd)/build/src/ptests/benchmark_hdf5"
+        if [ ! -f "$BENCHMARK_EXE" ]; then
+          echo "Error: benchmark_hdf5 executable not found at $BENCHMARK_EXE"
+          ls -la build/src/ptests/ || echo "ptests directory not found"
+          exit 1
+        fi
+
         # Create test directory
         mkdir -p benchmark_results
         cd benchmark_results
@@ -157,32 +165,32 @@ jobs:
 
         # Test 1: Small mesh test (32K elements, 2 processes)
         echo "=== Test 1: Small Mesh Test (32K elements, 2 processes) ===" | tee -a benchmark_output.txt
-        mpirun -np 2 ../build/src/ptests/benchmark_hdf5 -nelem 32768 | tee -a benchmark_output.txt
+        mpirun -np 2 "$BENCHMARK_EXE" -nelem 32768 | tee -a benchmark_output.txt
         echo "" | tee -a benchmark_output.txt
 
         # Test 2: Medium mesh test (128K elements, 2 processes)
         echo "=== Test 2: Medium Mesh Test (128K elements, 2 processes) ===" | tee -a benchmark_output.txt
-        mpirun -np 2 ../build/src/ptests/benchmark_hdf5 -nelem 131072 | tee -a benchmark_output.txt
+        mpirun -np 2 "$BENCHMARK_EXE" -nelem 131072 | tee -a benchmark_output.txt
         echo "" | tee -a benchmark_output.txt
 
         # Test 3: Large mesh test (512K elements, 2 processes)
         echo "=== Test 3: Large Mesh Test (512K elements, 2 processes) ===" | tee -a benchmark_output.txt
-        mpirun -np 2 ../build/src/ptests/benchmark_hdf5 -nelem 524288 | tee -a benchmark_output.txt
+        mpirun -np 2 "$BENCHMARK_EXE" -nelem 524288 | tee -a benchmark_output.txt
         echo "" | tee -a benchmark_output.txt
 
         # Test 4: Independent I/O mode test
         echo "=== Test 4: Independent I/O Mode Test (128K elements, 2 processes) ===" | tee -a benchmark_output.txt
-        mpirun -np 2 ../build/src/ptests/benchmark_hdf5 -nelem 131072 -ind | tee -a benchmark_output.txt
+        mpirun -np 2 "$BENCHMARK_EXE" -nelem 131072 -ind | tee -a benchmark_output.txt
         echo "" | tee -a benchmark_output.txt
 
         # Test 5: Multi-dataset API test
         echo "=== Test 5: Multi-dataset API Test (128K elements, 2 processes) ===" | tee -a benchmark_output.txt
-        mpirun -np 2 ../build/src/ptests/benchmark_hdf5 -nelem 131072 -md | tee -a benchmark_output.txt
+        mpirun -np 2 "$BENCHMARK_EXE" -nelem 131072 -md | tee -a benchmark_output.txt
         echo "" | tee -a benchmark_output.txt
 
         # Test 6: 4 processes test
         echo "=== Test 6: 4 Processes Test (256K elements) ===" | tee -a benchmark_output.txt
-        mpirun -np 4 ../build/src/ptests/benchmark_hdf5 -nelem 262144 | tee -a benchmark_output.txt
+        mpirun --oversubscribe -np 4 "$BENCHMARK_EXE" -nelem 262144 | tee -a benchmark_output.txt
         echo "" | tee -a benchmark_output.txt
 
         echo "=== Benchmark completed ===" | tee -a benchmark_output.txt
