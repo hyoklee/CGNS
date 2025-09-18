@@ -122,15 +122,15 @@ def parse_cgns_output(filename):
                 "value": elem_value
             })
 
-        # Look for process count
-        proc_matches = re.findall(r'(\d+)\s+processes?', section, re.IGNORECASE)
-        if proc_matches:
-            proc_count = float(proc_matches[-1])
-            results.append({
-                "name": f"{test_name} - Process Count",
-                "unit": "processes",
-                "value": proc_count
-            })
+        # Skip process count data processing - Process Count will always be the same
+        # proc_matches = re.findall(r'(\d+)\s+processes?', section, re.IGNORECASE)
+        # if proc_matches:
+        #     proc_count = float(proc_matches[-1])
+        #     results.append({
+        #         "name": f"{test_name} - Process Count",
+        #         "unit": "processes",
+        #         "value": proc_count
+        #     })
 
     # If no specific test sections found, try to parse timing.dat files or general output
     if not results:
