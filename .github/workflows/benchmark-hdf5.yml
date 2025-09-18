@@ -1,0 +1,242 @@
+name: CGNS HDF5 Benchmark
+
+on:
+  push:
+    branches: [ develop, main, master ]
+  pull_request:
+    branches: [ develop, main, master ]
+  schedule:
+    # Run daily at 6 AM UTC
+    - cron: '0 6 * * *'
+  workflow_dispatch:
+
+jobs:
+  benchmark-hdf5:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        submodules: recursive
+
+    - name: Install system dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y \
+          openmpi-bin openmpi-common libopenmpi-dev \
+          python3-pip build-essential cmake \
+          zlib1g-dev libcurl4-openssl-dev \
+          autotools-dev autoconf automake libtool \
+          pkg-config gfortran
+
+    - name: Install Python dependencies
+      run: |
+        pip3 install numpy matplotlib pandas
+
+    - name: Checkout HDF5
+      uses: actions/checkout@v4
+      with:
+        repository: HDFGroup/hdf5
+        ref: develop
+        path: hdf5
+
+    - name: Get HDF5 commit hash
+      id: hdf5-hash
+      run: |
+        cd hdf5
+        HDF5_HASH=$(git rev-parse HEAD)
+        echo "hash=$HDF5_HASH" >> $GITHUB_OUTPUT
+        echo "HDF5 commit hash: $HDF5_HASH"
+
+    - name: Check previous HDF5 hash
+      id: check-hash
+      run: |
+        # Try to get the previous hash from gh-pages branch
+        PREV_HASH=""
+        if git ls-remote --heads origin gh-pages >/dev/null 2>&1; then
+          # Clone gh-pages branch to get previous hash
+          git clone --single-branch --branch gh-pages https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }} gh-pages-temp || true
+          if [ -f gh-pages-temp/hdf5-hash.txt ]; then
+            PREV_HASH=$(cat gh-pages-temp/hdf5-hash.txt)
+          fi
+          rm -rf gh-pages-temp
+        fi
+
+        echo "Previous HDF5 hash: ${PREV_HASH:-none}"
+        echo "Current HDF5 hash: ${{ steps.hdf5-hash.outputs.hash }}"
+
+        if [ "$PREV_HASH" = "${{ steps.hdf5-hash.outputs.hash }}" ] && [ "${{ github.event_name }}" = "schedule" ]; then
+          echo "skip_tests=true" >> $GITHUB_OUTPUT
+          echo "No HDF5 changes detected, skipping tests for scheduled run"
+        else
+          echo "skip_tests=false" >> $GITHUB_OUTPUT
+          echo "HDF5 changed or manual trigger, running tests"
+        fi
+
+    - name: Cache HDF5 build
+      id: cache-hdf5
+      uses: actions/cache@v4
+      with:
+        path: ~/hdf5-install
+        key: hdf5-${{ steps.hdf5-hash.outputs.hash }}-zlib-${{ runner.os }}
+
+    - name: Build HDF5
+      if: steps.cache-hdf5.outputs.cache-hit != 'true' && steps.check-hash.outputs.skip_tests != 'true'
+      run: |
+        cd hdf5
+        mkdir build
+        cd build
+        cmake .. \
+          -DCMAKE_INSTALL_PREFIX=$HOME/hdf5-install \
+          -DCMAKE_BUILD_TYPE=Release \
+          -DHDF5_ENABLE_PARALLEL=ON \
+          -DHDF5_ENABLE_SUBFILING_VFD=ON \
+          -DHDF5_ENABLE_Z_LIB_SUPPORT=ON \
+          -DHDF5_BUILD_TOOLS=OFF \
+          -DHDF5_BUILD_EXAMPLES=OFF \
+          -DHDF5_BUILD_TESTS=OFF
+        make -j$(nproc)
+        make install
+
+    - name: Cache CGNS build
+      id: cache-cgns
+      uses: actions/cache@v4
+      with:
+        path: ~/cgns-install
+        key: cgns-${{ github.sha }}-hdf5-${{ steps.hdf5-hash.outputs.hash }}-${{ runner.os }}
+
+    - name: Configure CGNS
+      if: steps.cache-cgns.outputs.cache-hit != 'true' && steps.check-hash.outputs.skip_tests != 'true'
+      run: |
+        export HDF5_DIR=$HOME/hdf5-install
+        export CPPFLAGS="-I$HOME/hdf5-install/include"
+        export LDFLAGS="-L$HOME/hdf5-install/lib"
+        export LD_LIBRARY_PATH="$HOME/hdf5-install/lib:$LD_LIBRARY_PATH"
+        export PKG_CONFIG_PATH="$HOME/hdf5-install/lib/pkgconfig:$PKG_CONFIG_PATH"
+
+        mkdir build
+        cd build
+        cmake .. \
+          -DCMAKE_INSTALL_PREFIX=$HOME/cgns-install \
+          -DCMAKE_BUILD_TYPE=Release \
+          -DCGNS_ENABLE_HDF5=ON \
+          -DCGNS_ENABLE_PARALLEL=ON \
+          -DCGNS_ENABLE_TESTS=ON \
+          -DHDF5_DIR=$HOME/hdf5-install \
+          -DCMAKE_C_COMPILER=mpicc \
+          -DCMAKE_Fortran_COMPILER=mpif90
+
+    - name: Build CGNS
+      if: steps.cache-cgns.outputs.cache-hit != 'true' && steps.check-hash.outputs.skip_tests != 'true'
+      run: |
+        export LD_LIBRARY_PATH="$HOME/hdf5-install/lib:$LD_LIBRARY_PATH"
+        cd build
+        make -j$(nproc)
+        make install
+
+    - name: Create benchmark script
+      if: steps.check-hash.outputs.skip_tests != 'true'
+      run: |
+        cat > benchmark_script.sh << 'EOF'
+        #!/bin/bash
+        set -e
+
+        export HDF5_DIR=$HOME/hdf5-install
+        export CGNS_DIR=$HOME/cgns-install
+        export LD_LIBRARY_PATH="$HOME/hdf5-install/lib:$HOME/cgns-install/lib:$LD_LIBRARY_PATH"
+
+        # Create test directory
+        mkdir -p benchmark_results
+        cd benchmark_results
+
+        echo "=== CGNS HDF5 Benchmark Results ===" | tee benchmark_output.txt
+        echo "Timestamp: $(date)" | tee -a benchmark_output.txt
+        echo "HDF5 Version: $(strings $HOME/hdf5-install/lib/libhdf5.so | grep "HDF5 library version" | head -1)" | tee -a benchmark_output.txt
+        echo "CGNS Version: $(strings $HOME/cgns-install/lib/libcgns.so | grep "CGNS library version" | head -1 || echo "Version info not available")" | tee -a benchmark_output.txt
+        echo "" | tee -a benchmark_output.txt
+
+        # Test 1: Small mesh test (32K elements, 2 processes)
+        echo "=== Test 1: Small Mesh Test (32K elements, 2 processes) ===" | tee -a benchmark_output.txt
+        mpirun -np 2 ../build/src/ptests/benchmark_hdf5 -nelem 32768 | tee -a benchmark_output.txt
+        echo "" | tee -a benchmark_output.txt
+
+        # Test 2: Medium mesh test (128K elements, 2 processes)
+        echo "=== Test 2: Medium Mesh Test (128K elements, 2 processes) ===" | tee -a benchmark_output.txt
+        mpirun -np 2 ../build/src/ptests/benchmark_hdf5 -nelem 131072 | tee -a benchmark_output.txt
+        echo "" | tee -a benchmark_output.txt
+
+        # Test 3: Large mesh test (512K elements, 2 processes)
+        echo "=== Test 3: Large Mesh Test (512K elements, 2 processes) ===" | tee -a benchmark_output.txt
+        mpirun -np 2 ../build/src/ptests/benchmark_hdf5 -nelem 524288 | tee -a benchmark_output.txt
+        echo "" | tee -a benchmark_output.txt
+
+        # Test 4: Independent I/O mode test
+        echo "=== Test 4: Independent I/O Mode Test (128K elements, 2 processes) ===" | tee -a benchmark_output.txt
+        mpirun -np 2 ../build/src/ptests/benchmark_hdf5 -nelem 131072 -ind | tee -a benchmark_output.txt
+        echo "" | tee -a benchmark_output.txt
+
+        # Test 5: Multi-dataset API test
+        echo "=== Test 5: Multi-dataset API Test (128K elements, 2 processes) ===" | tee -a benchmark_output.txt
+        mpirun -np 2 ../build/src/ptests/benchmark_hdf5 -nelem 131072 -md | tee -a benchmark_output.txt
+        echo "" | tee -a benchmark_output.txt
+
+        # Test 6: 4 processes test
+        echo "=== Test 6: 4 Processes Test (256K elements) ===" | tee -a benchmark_output.txt
+        mpirun -np 4 ../build/src/ptests/benchmark_hdf5 -nelem 262144 | tee -a benchmark_output.txt
+        echo "" | tee -a benchmark_output.txt
+
+        echo "=== Benchmark completed ===" | tee -a benchmark_output.txt
+        EOF
+
+        chmod +x benchmark_script.sh
+
+    - name: Run benchmarks
+      if: steps.check-hash.outputs.skip_tests != 'true'
+      run: ./benchmark_script.sh
+
+    - name: Parse benchmark results
+      if: steps.check-hash.outputs.skip_tests != 'true'
+      run: |
+        python3 scripts/parse_cgns_benchmark.py benchmark_results/benchmark_output.txt benchmark-results.json --verbose
+
+    - name: Store benchmark result
+      if: steps.check-hash.outputs.skip_tests != 'true'
+      uses: benchmark-action/github-action-benchmark@v1
+      with:
+        name: CGNS HDF5 Performance
+        tool: 'customSmallerIsBetter'
+        output-file-path: benchmark-results.json
+        github-token: ${{ secrets.GITHUB_TOKEN }}
+        auto-push: true
+        gh-pages-branch: gh-pages
+        benchmark-data-dir-path: dev/bench
+
+    - name: Update HDF5 hash file
+      if: steps.check-hash.outputs.skip_tests != 'true'
+      run: |
+        # Clone gh-pages to update hash file
+        git clone --single-branch --branch gh-pages https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }} gh-pages-update || git clone --orphan gh-pages gh-pages-update
+        cd gh-pages-update
+        echo "${{ steps.hdf5-hash.outputs.hash }}" > hdf5-hash.txt
+        git config user.name "github-actions[bot]"
+        git config user.email "github-actions[bot]@users.noreply.github.com"
+        git add hdf5-hash.txt
+        git commit -m "update: HDF5 commit hash to ${{ steps.hdf5-hash.outputs.hash }}" || echo "No changes to commit"
+        git push origin gh-pages || git push -u origin gh-pages
+
+    - name: Skip message
+      if: steps.check-hash.outputs.skip_tests == 'true'
+      run: |
+        echo "⏭️ Skipping tests - no HDF5 changes detected since last run"
+        echo "Previous HDF5 hash matches current hash: ${{ steps.hdf5-hash.outputs.hash }}"
+
+    - name: Upload benchmark artifacts
+      uses: actions/upload-artifact@v4
+      if: steps.check-hash.outputs.skip_tests != 'true'
+      with:
+        name: benchmark-results
+        path: |
+          benchmark_results/benchmark_output.txt
+          benchmark-results.json
+          benchmark_results/*.cgns
+          benchmark_results/timing_*.dat
