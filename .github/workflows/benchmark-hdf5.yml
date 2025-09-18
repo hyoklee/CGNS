@@ -210,7 +210,6 @@ jobs:
         auto-push: true
         gh-pages-branch: gh-pages
         benchmark-data-dir-path: dev/bench
-        skip-fetch-gh-pages: true
 
     - name: Update HDF5 hash file
       if: steps.check-hash.outputs.skip_tests != 'true'
