@@ -26,26 +26,6 @@ window.BENCHMARK_DATA = {
         "tool": "customSmallerIsBetter",
         "benches": [
           {
-            "name": "Test 1: Small Mesh Test (32K elements, serial) - Elements Processed",
-            "value": 32000,
-            "unit": "elements"
-          },
-          {
-            "name": "Test 2: Medium Mesh Test (128K elements, serial) - Elements Processed",
-            "value": 128000,
-            "unit": "elements"
-          },
-          {
-            "name": "Test 3: Large Mesh Test (512K elements, serial) - Elements Processed",
-            "value": 512000,
-            "unit": "elements"
-          },
-          {
-            "name": "Test 4: Very Large Mesh Test (1M elements, serial) - Elements Processed",
-            "value": 1000000,
-            "unit": "elements"
-          },
-          {
             "name": "Serial HDF5 - Total Runtime",
             "value": 0.025,
             "unit": "seconds"
