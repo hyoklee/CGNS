@@ -23,7 +23,6 @@ jobs:
       run: |
         sudo apt-get update
         sudo apt-get install -y \
-          openmpi-bin openmpi-common libopenmpi-dev \
           python3-pip build-essential cmake \
           zlib1g-dev libcurl4-openssl-dev \
           autotools-dev autoconf automake libtool \
@@ -79,16 +78,15 @@ jobs:
         cd hdf5
         mkdir build
         cd build
-        CC=mpicc cmake .. \
+        cmake .. \
           -DCMAKE_INSTALL_PREFIX=$HOME/hdf5-install \
           -DCMAKE_BUILD_TYPE=Release \
-          -DHDF5_ENABLE_PARALLEL=ON \
-          -DHDF5_ENABLE_SUBFILING_VFD=ON \
+          -DHDF5_ENABLE_PARALLEL=OFF \
+          -DHDF5_ENABLE_SUBFILING_VFD=OFF \
           -DHDF5_ENABLE_ZLIB_SUPPORT=ON \
           -DHDF5_BUILD_TOOLS=OFF \
           -DHDF5_BUILD_EXAMPLES=OFF \
-          -DHDF5_BUILD_TESTS=OFF \
-          -DCMAKE_C_COMPILER=mpicc
+          -DHDF5_BUILD_TESTS=OFF
         make -j$(nproc)
         make install
 
@@ -104,7 +102,7 @@ jobs:
         # Debug: Check HDF5 installation
         echo "=== HDF5 Installation Check ==="
         ls -la $HOME/hdf5-install/lib/libhdf5* || echo "No HDF5 libraries found"
-        $HOME/hdf5-install/bin/h5cc -showconfig | grep -E "(Parallel|MPI)" || echo "No parallel info found"
+        $HOME/hdf5-install/bin/h5cc -showconfig | grep -E "(Serial|Version)" || echo "No version info found"
 
         mkdir build
         cd build
@@ -112,14 +110,13 @@ jobs:
           -DCMAKE_INSTALL_PREFIX=$HOME/cgns-install \
           -DCMAKE_BUILD_TYPE=Release \
           -DCGNS_ENABLE_HDF5=ON \
-          -DCGNS_ENABLE_PARALLEL=ON \
+          -DCGNS_ENABLE_PARALLEL=OFF \
           -DCGNS_ENABLE_TESTS=ON \
-          -DHDF5_DIR=$HOME/hdf5-install \
-          -DCMAKE_C_COMPILER=mpicc
+          -DHDF5_DIR=$HOME/hdf5-install
 
         # Debug: Check CMake configuration results
         echo "=== CMake Configuration Results ==="
-        grep -E "(CGNS_ENABLE_|PARALLEL|MPI|HDF5)" CMakeCache.txt || echo "No relevant config found"
+        grep -E "(CGNS_ENABLE_|HDF5)" CMakeCache.txt || echo "No relevant config found"
 
     - name: Build CGNS
       run: |
@@ -128,18 +125,18 @@ jobs:
         make -j$(nproc)
         make install
 
-    - name: Verify ptests build
+    - name: Verify benchmark executable build
 #      if: steps.check-hash.outputs.skip_tests != 'true'
       run: |
-        echo "Checking if ptests were built..."
-        ls -la build/src/ptests/ || echo "ptests directory not found"
-        if [ -f "build/src/ptests/benchmark_hdf5" ]; then
-          echo "✓ benchmark_hdf5 executable found"
-          ldd build/src/ptests/benchmark_hdf5 | head -10
+        echo "Checking if serial benchmark was built..."
+        ls -la build/src/tests/ || echo "tests directory not found"
+        if [ -f "build/src/tests/ser_benchmark_hdf5" ]; then
+          echo "✓ ser_benchmark_hdf5 executable found"
+          ldd build/src/tests/ser_benchmark_hdf5 | head -10
         else
-          echo "✗ benchmark_hdf5 executable not found"
-          echo "Available executables in ptests:"
-          find build/src/ptests/ -type f -executable 2>/dev/null || echo "No executables found"
+          echo "✗ ser_benchmark_hdf5 executable not found"
+          echo "Available executables in tests:"
+          find build/src/tests/ -type f -executable 2>/dev/null || echo "No executables found"
           echo "Available files in build/src/:"
           ls -la build/src/ || echo "build/src/ not found"
           exit 1
@@ -157,10 +154,10 @@ jobs:
         export LD_LIBRARY_PATH="$HOME/hdf5-install/lib:$HOME/cgns-install/lib:$LD_LIBRARY_PATH"
 
         # Find the benchmark executable
-        BENCHMARK_EXE="$(pwd)/build/src/ptests/benchmark_hdf5"
+        BENCHMARK_EXE="$(pwd)/build/src/tests/ser_benchmark_hdf5"
         if [ ! -f "$BENCHMARK_EXE" ]; then
-          echo "Error: benchmark_hdf5 executable not found at $BENCHMARK_EXE"
-          ls -la build/src/ptests/ || echo "ptests directory not found"
+          echo "Error: ser_benchmark_hdf5 executable not found at $BENCHMARK_EXE"
+          ls -la build/src/tests/ || echo "tests directory not found"
           exit 1
         fi
 
@@ -174,34 +171,44 @@ jobs:
         echo "CGNS Version: $(strings $HOME/cgns-install/lib/libcgns.so | grep "CGNS library version" | head -1 || echo "Version info not available")" | tee -a benchmark_output.txt
         echo "" | tee -a benchmark_output.txt
 
-        # Test 1: Small mesh test (32K elements, 2 processes)
-        echo "=== Test 1: Small Mesh Test (32K elements, 2 processes) ===" | tee -a benchmark_output.txt
-        mpirun -np 2 "$BENCHMARK_EXE" -nelem 32768 | tee -a benchmark_output.txt
+        # Test 1: Small mesh test (32K elements, serial)
+        echo "=== Test 1: Small Mesh Test (32K elements, serial) ===" | tee -a benchmark_output.txt
+        "$BENCHMARK_EXE" -nelem 32768 | tee -a benchmark_output.txt
+        if [ -f "timing.dat" ]; then
+          echo "Timing data for 32K elements:" | tee -a benchmark_output.txt
+          cat timing.dat | tee -a benchmark_output.txt
+          cp timing.dat timing_32k.dat
+        fi
         echo "" | tee -a benchmark_output.txt
 
-        # Test 2: Medium mesh test (128K elements, 2 processes)
-        echo "=== Test 2: Medium Mesh Test (128K elements, 2 processes) ===" | tee -a benchmark_output.txt
-        mpirun -np 2 "$BENCHMARK_EXE" -nelem 131072 | tee -a benchmark_output.txt
+        # Test 2: Medium mesh test (128K elements, serial)
+        echo "=== Test 2: Medium Mesh Test (128K elements, serial) ===" | tee -a benchmark_output.txt
+        "$BENCHMARK_EXE" -nelem 131072 | tee -a benchmark_output.txt
+        if [ -f "timing.dat" ]; then
+          echo "Timing data for 128K elements:" | tee -a benchmark_output.txt
+          cat timing.dat | tee -a benchmark_output.txt
+          cp timing.dat timing_128k.dat
+        fi
         echo "" | tee -a benchmark_output.txt
 
-        # Test 3: Large mesh test (512K elements, 2 processes)
-        echo "=== Test 3: Large Mesh Test (512K elements, 2 processes) ===" | tee -a benchmark_output.txt
-        mpirun -np 2 "$BENCHMARK_EXE" -nelem 524288 | tee -a benchmark_output.txt
+        # Test 3: Large mesh test (512K elements, serial)
+        echo "=== Test 3: Large Mesh Test (512K elements, serial) ===" | tee -a benchmark_output.txt
+        "$BENCHMARK_EXE" -nelem 524288 | tee -a benchmark_output.txt
+        if [ -f "timing.dat" ]; then
+          echo "Timing data for 512K elements:" | tee -a benchmark_output.txt
+          cat timing.dat | tee -a benchmark_output.txt
+          cp timing.dat timing_512k.dat
+        fi
         echo "" | tee -a benchmark_output.txt
 
-        # Test 4: Independent I/O mode test
-        echo "=== Test 4: Independent I/O Mode Test (128K elements, 2 processes) ===" | tee -a benchmark_output.txt
-        mpirun -np 2 "$BENCHMARK_EXE" -nelem 131072 -ind | tee -a benchmark_output.txt
-        echo "" | tee -a benchmark_output.txt
-
-        # Test 5: Multi-dataset API test
-        echo "=== Test 5: Multi-dataset API Test (128K elements, 2 processes) ===" | tee -a benchmark_output.txt
-        mpirun -np 2 "$BENCHMARK_EXE" -nelem 131072 -md | tee -a benchmark_output.txt
-        echo "" | tee -a benchmark_output.txt
-
-        # Test 6: 4 processes test
-        echo "=== Test 6: 4 Processes Test (256K elements) ===" | tee -a benchmark_output.txt
-        mpirun --oversubscribe -np 4 "$BENCHMARK_EXE" -nelem 262144 | tee -a benchmark_output.txt
+        # Test 4: Very large mesh test (1M elements, serial)
+        echo "=== Test 4: Very Large Mesh Test (1M elements, serial) ===" | tee -a benchmark_output.txt
+        "$BENCHMARK_EXE" -nelem 1048576 | tee -a benchmark_output.txt
+        if [ -f "timing.dat" ]; then
+          echo "Timing data for 1M elements:" | tee -a benchmark_output.txt
+          cat timing.dat | tee -a benchmark_output.txt
+          cp timing.dat timing_1m.dat
+        fi
         echo "" | tee -a benchmark_output.txt
 
         echo "=== Benchmark completed ===" | tee -a benchmark_output.txt

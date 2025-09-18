@@ -182,13 +182,17 @@ def parse_cgns_output(filename):
 
 def parse_timing_file(timing_file_path):
     """
-    Parse a CGNS timing.dat file for additional metrics.
+    Parse a CGNS timing.dat file for performance metrics.
+
+    Expected format from ser_benchmark_hdf5:
+    #nprocs, total time, write: coord., elem., field, array, read: coord., elem., field, array, MB: coord, elem, field, array
+     0.021 0.001 0.001 0.001 0.001 0.001 0.001 0.001 0.000 0.003 0.002 0.000 0.000 0.000 0.000 3 2 3 2
 
     Args:
         timing_file_path (str): Path to timing.dat file
 
     Returns:
-        list: Additional timing results
+        list: Timing results in benchmark format
     """
     results = []
 
@@ -200,44 +204,70 @@ def parse_timing_file(timing_file_path):
             if line.startswith('#'):
                 continue
 
-            # Parse timing data - format depends on the specific timing file format
-            # CGNS timing files typically have: nprocs, total_time, write_times..., read_times..., MB_sizes...
+            # Parse timing data from ser_benchmark_hdf5 format
+            # Format: total_time write_coord write_elem write_field write_array read_coord read_elem read_field read_array ...
             values = line.strip().split()
-            if len(values) >= 15:  # Expected number of timing values
+            if len(values) >= 17:  # Ensure we have all required values
                 try:
-                    nprocs = int(values[0])
-                    total_time = float(values[1])
-                    write_coord = float(values[2])
-                    write_elem = float(values[3])
-                    write_field = float(values[4])
-                    write_array = float(values[5])
-                    read_coord = float(values[6])
-                    read_elem = float(values[7])
-                    read_field = float(values[8])
-                    read_array = float(values[9])
+                    total_time = float(values[0])
+                    write_coord = float(values[1])
+                    write_elem = float(values[2])
+                    write_field = float(values[3])
+                    write_array = float(values[4])
+                    read_coord = float(values[5])
+                    read_elem = float(values[6])
+                    read_field = float(values[7])
+                    read_array = float(values[8])
+
+                    # Memory usage data (MB)
+                    mb_coord = float(values[13])
+                    mb_elem = float(values[14])
+                    mb_field = float(values[15])
+                    mb_array = float(values[16])
+
+                    # Calculate derived metrics
+                    total_write_time = write_coord + write_elem + write_field + write_array
+                    total_read_time = read_coord + read_elem + read_field + read_array
+                    total_data_mb = mb_coord + mb_elem + mb_field + mb_array
+
+                    # Calculate I/O performance (MB/s)
+                    write_throughput = total_data_mb / total_write_time if total_write_time > 0 else 0
+                    read_throughput = total_data_mb / total_read_time if total_read_time > 0 else 0
 
                     # Add timing results
                     timing_metrics = [
-                        ("Total Runtime", total_time),
-                        ("Write Coordinates", write_coord),
-                        ("Write Elements", write_elem),
-                        ("Write Fields", write_field),
-                        ("Write Arrays", write_array),
-                        ("Read Coordinates", read_coord),
-                        ("Read Elements", read_elem),
-                        ("Read Fields", read_field),
-                        ("Read Arrays", read_array)
+                        ("Total Runtime", total_time, "seconds"),
+                        ("Total Write Time", total_write_time, "seconds"),
+                        ("Total Read Time", total_read_time, "seconds"),
+                        ("Write Coordinates", write_coord, "seconds"),
+                        ("Write Elements", write_elem, "seconds"),
+                        ("Write Fields", write_field, "seconds"),
+                        ("Write Arrays", write_array, "seconds"),
+                        ("Read Coordinates", read_coord, "seconds"),
+                        ("Read Elements", read_elem, "seconds"),
+                        ("Read Fields", read_field, "seconds"),
+                        ("Read Arrays", read_array, "seconds"),
+                        ("Data Size Coordinates", mb_coord, "MB"),
+                        ("Data Size Elements", mb_elem, "MB"),
+                        ("Data Size Fields", mb_field, "MB"),
+                        ("Data Size Arrays", mb_array, "MB"),
+                        ("Total Data Size", total_data_mb, "MB"),
+                        ("Write Throughput", write_throughput, "MB/s"),
+                        ("Read Throughput", read_throughput, "MB/s")
                     ]
 
-                    for name, value in timing_metrics:
-                        results.append({
-                            "name": f"Timing File - {name} ({nprocs} procs)",
-                            "unit": "seconds",
-                            "value": value
-                        })
+                    for name, value, unit in timing_metrics:
+                        # Skip zero values for cleaner output (except total times)
+                        if value > 0 or "Total" in name:
+                            results.append({
+                                "name": f"Serial HDF5 - {name}",
+                                "unit": unit,
+                                "value": value
+                            })
 
                 except (ValueError, IndexError) as e:
                     print(f"Warning: Could not parse timing line: {line.strip()}")
+                    print(f"Error: {e}")
                     continue
 
     except FileNotFoundError:
@@ -276,7 +306,17 @@ Examples:
 
         # Also try to parse any timing files in the same directory
         input_path = Path(args.input_file)
+
+        # Look for standard timing.dat file and timing_*.dat files
         timing_files = list(input_path.parent.glob("timing_*.dat"))
+        standard_timing = input_path.parent / "timing.dat"
+        if standard_timing.exists():
+            timing_files.append(standard_timing)
+
+        # Also look in current working directory for timing.dat
+        cwd_timing = Path.cwd() / "timing.dat"
+        if cwd_timing.exists() and cwd_timing not in timing_files:
+            timing_files.append(cwd_timing)
 
         for timing_file in timing_files:
             if args.verbose:
