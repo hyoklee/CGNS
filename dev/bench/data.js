@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1758374461485,
+  "lastUpdate": 1758385434370,
   "repoUrl": "https://github.com/hyoklee/CGNS",
   "entries": {
     "CGNS HDF5 Performance": [
@@ -473,6 +473,250 @@ window.BENCHMARK_DATA = {
             "name": "Serial HDF5 - Read Throughput",
             "value": 5000,
             "unit": "MB/s"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "hyoklee@hdfgroup.org",
+            "name": "H. Joe Lee",
+            "username": "hyoklee"
+          },
+          "committer": {
+            "email": "hyoklee@hdfgroup.org",
+            "name": "H. Joe Lee",
+            "username": "hyoklee"
+          },
+          "distinct": true,
+          "id": "eb150bbe6ce70e72e095ff3a89cd06601681d798",
+          "message": "Update parse_cgns_benchmark.py to generate unique test names and skip Data Size results\n\n- Generate unique test names in format: \"Test N: Small Mesh Test (32K elements, serial) - Serial HDF5 - Metric\"\n- Skip processing all \"Data Size\" results as requested\n- Ensure exactly 8 timing metrics per test (32 total for 4 tests)\n- Fix duplicate timing file processing issue\n- Timing metrics: Total Runtime, Total Write Time, Total Read Time, Write/Read Coordinates/Elements/Fields\n\n🤖 Generated with [Claude Code](https://claude.ai/code)\n\nCo-Authored-By: Claude <noreply@anthropic.com>",
+          "timestamp": "2025-09-20T11:17:55-05:00",
+          "tree_id": "9887c8628c226d9c71fd6d693fb721fba266f830",
+          "url": "https://github.com/hyoklee/CGNS/commit/eb150bbe6ce70e72e095ff3a89cd06601681d798"
+        },
+        "date": 1758385432952,
+        "tool": "customSmallerIsBetter",
+        "benches": [
+          {
+            "name": "Test 1: Small Mesh Test (32K elements, serial) - Elements Processed",
+            "value": 32000,
+            "unit": "elements"
+          },
+          {
+            "name": "Test 2: Medium Mesh Test (128K elements, serial) - Elements Processed",
+            "value": 128000,
+            "unit": "elements"
+          },
+          {
+            "name": "Test 3: Large Mesh Test (512K elements, serial) - Elements Processed",
+            "value": 512000,
+            "unit": "elements"
+          },
+          {
+            "name": "Test 4: Very Large Mesh Test (1M elements, serial) - Elements Processed",
+            "value": 1000000,
+            "unit": "elements"
+          },
+          {
+            "name": "Test 1: Small Mesh Test (32K elements, serial) -  Serial HDF5 - Total Runtime",
+            "value": 0.026,
+            "unit": "seconds"
+          },
+          {
+            "name": "Test 1: Small Mesh Test (32K elements, serial) -  Serial HDF5 - Total Write Time",
+            "value": 0.007,
+            "unit": "seconds"
+          },
+          {
+            "name": "Test 1: Small Mesh Test (32K elements, serial) -  Serial HDF5 - Total Read Time",
+            "value": 0.002,
+            "unit": "seconds"
+          },
+          {
+            "name": "Test 1: Small Mesh Test (32K elements, serial) -  Serial HDF5 - Write Coordinates",
+            "value": 0.002,
+            "unit": "seconds"
+          },
+          {
+            "name": "Test 1: Small Mesh Test (32K elements, serial) -  Serial HDF5 - Write Elements",
+            "value": 0.002,
+            "unit": "seconds"
+          },
+          {
+            "name": "Test 1: Small Mesh Test (32K elements, serial) -  Serial HDF5 - Write Fields",
+            "value": 0.002,
+            "unit": "seconds"
+          },
+          {
+            "name": "Test 1: Small Mesh Test (32K elements, serial) -  Serial HDF5 - Read Coordinates",
+            "value": 0.001,
+            "unit": "seconds"
+          },
+          {
+            "name": "Test 1: Small Mesh Test (32K elements, serial) -  Serial HDF5 - Read Elements",
+            "value": 0.001,
+            "unit": "seconds"
+          },
+          {
+            "name": "Test 1: Small Mesh Test (32K elements, serial) -  Serial HDF5 - Total Runtime",
+            "value": 0.028,
+            "unit": "seconds"
+          },
+          {
+            "name": "Test 1: Small Mesh Test (32K elements, serial) -  Serial HDF5 - Total Write Time",
+            "value": 0.008,
+            "unit": "seconds"
+          },
+          {
+            "name": "Test 1: Small Mesh Test (32K elements, serial) -  Serial HDF5 - Total Read Time",
+            "value": 0.002,
+            "unit": "seconds"
+          },
+          {
+            "name": "Test 1: Small Mesh Test (32K elements, serial) -  Serial HDF5 - Write Coordinates",
+            "value": 0.002,
+            "unit": "seconds"
+          },
+          {
+            "name": "Test 1: Small Mesh Test (32K elements, serial) -  Serial HDF5 - Write Elements",
+            "value": 0.002,
+            "unit": "seconds"
+          },
+          {
+            "name": "Test 1: Small Mesh Test (32K elements, serial) -  Serial HDF5 - Write Fields",
+            "value": 0.002,
+            "unit": "seconds"
+          },
+          {
+            "name": "Test 1: Small Mesh Test (32K elements, serial) -  Serial HDF5 - Read Coordinates",
+            "value": 0.001,
+            "unit": "seconds"
+          },
+          {
+            "name": "Test 1: Small Mesh Test (32K elements, serial) -  Serial HDF5 - Read Elements",
+            "value": 0.001,
+            "unit": "seconds"
+          },
+          {
+            "name": "Test 1: Small Mesh Test (32K elements, serial) -  Serial HDF5 - Total Runtime",
+            "value": 0.027,
+            "unit": "seconds"
+          },
+          {
+            "name": "Test 1: Small Mesh Test (32K elements, serial) -  Serial HDF5 - Total Write Time",
+            "value": 0.007,
+            "unit": "seconds"
+          },
+          {
+            "name": "Test 1: Small Mesh Test (32K elements, serial) -  Serial HDF5 - Total Read Time",
+            "value": 0.002,
+            "unit": "seconds"
+          },
+          {
+            "name": "Test 1: Small Mesh Test (32K elements, serial) -  Serial HDF5 - Write Coordinates",
+            "value": 0.002,
+            "unit": "seconds"
+          },
+          {
+            "name": "Test 1: Small Mesh Test (32K elements, serial) -  Serial HDF5 - Write Elements",
+            "value": 0.002,
+            "unit": "seconds"
+          },
+          {
+            "name": "Test 1: Small Mesh Test (32K elements, serial) -  Serial HDF5 - Write Fields",
+            "value": 0.002,
+            "unit": "seconds"
+          },
+          {
+            "name": "Test 1: Small Mesh Test (32K elements, serial) -  Serial HDF5 - Read Coordinates",
+            "value": 0.001,
+            "unit": "seconds"
+          },
+          {
+            "name": "Test 1: Small Mesh Test (32K elements, serial) -  Serial HDF5 - Read Elements",
+            "value": 0.001,
+            "unit": "seconds"
+          },
+          {
+            "name": "Test 1: Small Mesh Test (32K elements, serial) -  Serial HDF5 - Total Runtime",
+            "value": 0.026,
+            "unit": "seconds"
+          },
+          {
+            "name": "Test 1: Small Mesh Test (32K elements, serial) -  Serial HDF5 - Total Write Time",
+            "value": 0.007,
+            "unit": "seconds"
+          },
+          {
+            "name": "Test 1: Small Mesh Test (32K elements, serial) -  Serial HDF5 - Total Read Time",
+            "value": 0.001,
+            "unit": "seconds"
+          },
+          {
+            "name": "Test 1: Small Mesh Test (32K elements, serial) -  Serial HDF5 - Write Coordinates",
+            "value": 0.002,
+            "unit": "seconds"
+          },
+          {
+            "name": "Test 1: Small Mesh Test (32K elements, serial) -  Serial HDF5 - Write Elements",
+            "value": 0.002,
+            "unit": "seconds"
+          },
+          {
+            "name": "Test 1: Small Mesh Test (32K elements, serial) -  Serial HDF5 - Write Fields",
+            "value": 0.002,
+            "unit": "seconds"
+          },
+          {
+            "name": "Test 1: Small Mesh Test (32K elements, serial) -  Serial HDF5 - Read Coordinates",
+            "value": 0.001,
+            "unit": "seconds"
+          },
+          {
+            "name": "Test 1: Small Mesh Test (32K elements, serial) -  Serial HDF5 - Read Elements",
+            "value": 0,
+            "unit": "seconds"
+          },
+          {
+            "name": "Test 1: Small Mesh Test (32K elements, serial) -  Serial HDF5 - Total Runtime",
+            "value": 0.027,
+            "unit": "seconds"
+          },
+          {
+            "name": "Test 1: Small Mesh Test (32K elements, serial) -  Serial HDF5 - Total Write Time",
+            "value": 0.007,
+            "unit": "seconds"
+          },
+          {
+            "name": "Test 1: Small Mesh Test (32K elements, serial) -  Serial HDF5 - Total Read Time",
+            "value": 0.002,
+            "unit": "seconds"
+          },
+          {
+            "name": "Test 1: Small Mesh Test (32K elements, serial) -  Serial HDF5 - Write Coordinates",
+            "value": 0.002,
+            "unit": "seconds"
+          },
+          {
+            "name": "Test 1: Small Mesh Test (32K elements, serial) -  Serial HDF5 - Write Elements",
+            "value": 0.002,
+            "unit": "seconds"
+          },
+          {
+            "name": "Test 1: Small Mesh Test (32K elements, serial) -  Serial HDF5 - Write Fields",
+            "value": 0.002,
+            "unit": "seconds"
+          },
+          {
+            "name": "Test 1: Small Mesh Test (32K elements, serial) -  Serial HDF5 - Read Coordinates",
+            "value": 0.001,
+            "unit": "seconds"
+          },
+          {
+            "name": "Test 1: Small Mesh Test (32K elements, serial) -  Serial HDF5 - Read Elements",
+            "value": 0.001,
+            "unit": "seconds"
           }
         ]
       }
