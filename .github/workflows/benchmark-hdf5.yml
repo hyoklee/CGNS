@@ -2,11 +2,10 @@ name: CGNS HDF5 Benchmark
 
 on:
   push:
-    branches: [ develop, main, master ]
+    branches: develop
   pull_request:
-    branches: [ develop, main, master ]
+    branches: develop
   schedule:
-    # Run daily at 6 AM UTC
     - cron: '0 6 * * *'
   workflow_dispatch:
 
@@ -126,7 +125,7 @@ jobs:
         make install
 
     - name: Verify benchmark executable build
-#      if: steps.check-hash.outputs.skip_tests != 'true'
+      if: steps.check-hash.outputs.skip_tests != 'true'
       run: |
         echo "Checking if serial benchmark was built..."
         ls -la build/src/tests/ || echo "tests directory not found"
@@ -143,7 +142,7 @@ jobs:
         fi
 
     - name: Create benchmark script
-#      if: steps.check-hash.outputs.skip_tests != 'true'
+      if: steps.check-hash.outputs.skip_tests != 'true'
       run: |
         cat > benchmark_script.sh << 'EOF'
         #!/bin/bash
@@ -287,19 +286,10 @@ jobs:
           benchmark_results/benchmark_output.txt
           benchmark-results.json
           benchmark_results/*.cgns
-          benchmark_results/timing_*.dat
+          benchmark_results/*.dat
           benchmark_results/benchmark_script_local.sh
-          scripts/parse_cgns_benchmark.py
           parse_debug.log
 
-    - name: Upload debug artifacts (when tests skipped)
-      uses: actions/upload-artifact@v4
-      if: steps.check-hash.outputs.skip_tests == 'true'
-      with:
-        name: debug-info-skipped
-        path: |
-          scripts/parse_cgns_benchmark.py
-          benchmark_script.sh
 
     - name: Upload debug artifacts (on failure)
       uses: actions/upload-artifact@v4
@@ -309,6 +299,4 @@ jobs:
         path: |
           benchmark_results/benchmark_output.txt
           benchmark-results.json
-          scripts/parse_cgns_benchmark.py
           parse_debug.log
-          benchmark_script.sh
