@@ -59,3 +59,11 @@ cmake_install.cmake
 install_manifest.txt
 CTestTestfile.cmake
 
+# Benchmark files and directories
+benchmark_results/
+benchmark-results.json
+timing.dat
+timing_*.dat
+build/
+hdf5/
+
