@@ -37,11 +37,47 @@ def parse_cgns_output(filename):
         print(f"Error reading file {filename}: {e}")
         return []
 
+    # Check if file is empty or too small to contain valid data
+    if len(content.strip()) == 0:
+        print("Input file is empty")
+        return []
+
+    if len(content.strip()) < 50:  # Arbitrary threshold for minimal content
+        print(f"Input file appears to be too small (only {len(content.strip())} characters)")
+        print(f"Content preview: {content.strip()[:100]}...")
+        return []
+
+    print(f"Processing input file with {len(content)} characters")
+    print(f"Looking for test sections...")
+
     # Split by test sections - process all available tests
     test_sections = re.split(r'=== Test \d+:', content)
 
+    print(f"Found {len(test_sections)} potential test sections (including header)")
+
+    if len(test_sections) == 1:
+        print("No test sections found with pattern '=== Test N:'")
+        print("Checking for alternative test section patterns...")
+
+        # Try alternative patterns that might be in the file
+        alt_patterns = [
+            r'Test \d+:',
+            r'=== Test \d+\s',
+            r'TEST \d+',
+            r'Benchmark \d+',
+        ]
+
+        for pattern in alt_patterns:
+            alt_sections = re.split(pattern, content, flags=re.IGNORECASE)
+            if len(alt_sections) > 1:
+                print(f"Found {len(alt_sections)-1} sections with pattern '{pattern}'")
+                break
+        else:
+            print("No recognizable test section patterns found")
+
     for i, section in enumerate(test_sections[1:], 1):  # Process all tests
         test_name = f"Test {i}"
+        print(f"Processing {test_name}, section length: {len(section)} characters")
 
         # Parse timing data from the CGNS benchmark output
         # The benchmark outputs timing in different ways:
@@ -62,6 +98,7 @@ def parse_cgns_output(filename):
 
         if total_write_match:
             total_write_time = float(total_write_match.group(1))
+            print(f"  Found total write time: {total_write_time} seconds")
 
             # Add the three timing metrics for this test
             results.append({
@@ -82,15 +119,20 @@ def parse_cgns_output(filename):
                 "unit": "seconds",
                 "value": 0.0
             })
+        else:
+            print(f"  No 'Total write time' found in {test_name}")
 
         # Add throughput data if available
         if throughput_match:
             throughput_value = float(throughput_match.group(1))
+            print(f"  Found write throughput: {throughput_value} MB/s")
             results.append({
                 "name": f"{test_name}: Write throughput",
                 "unit": "MB/s",
                 "value": throughput_value
             })
+        else:
+            print(f"  No 'Write performance' found in {test_name}")
 
         # Skip file size and performance information as requested - only time data in seconds
 
@@ -121,12 +163,14 @@ def parse_cgns_output(filename):
             matches = re.findall(pattern, content, re.IGNORECASE)
             if matches:
                 timing_value = float(matches[-1])
+                print(f"Found general pattern '{metric_name}': {timing_value}")
                 results.append({
                     "name": metric_name,
                     "unit": "seconds",
                     "value": timing_value
                 })
 
+    print(f"Total results found: {len(results)}")
     return results
 
 
@@ -254,12 +298,41 @@ Examples:
                 print("  - Output format is different than expected")
                 print("  - File contains no performance data")
 
-            # Create a minimal result to avoid workflow failure
-            results = [{
-                "name": "No Results Found",
-                "unit": "N/A",
-                "value": 0
-            }]
+            # Check if the input file is actually empty before creating fallback
+            try:
+                with open(args.input_file, 'r') as f:
+                    file_content = f.read()
+
+                if len(file_content.strip()) == 0:
+                    print("Input file is empty, creating fallback result")
+                    # Create a minimal result to avoid workflow failure
+                    results = [{
+                        "name": "No Results Found",
+                        "unit": "N/A",
+                        "value": 0
+                    }]
+                else:
+                    print(f"Input file contains {len(file_content)} characters but no valid benchmark data was parsed")
+                    print("This suggests a parsing issue rather than missing data")
+
+                    # Show first few lines for debugging
+                    lines = file_content.split('\n')[:10]
+                    print("First 10 lines of input file:")
+                    for i, line in enumerate(lines, 1):
+                        print(f"  {i:2d}: {line[:80]}{'...' if len(line) > 80 else ''}")
+
+                    # Exit with error instead of creating fallback when data exists
+                    print("\nError: Failed to parse benchmark data from non-empty file")
+                    sys.exit(1)
+
+            except Exception as e:
+                print(f"Error checking input file: {e}")
+                # Create fallback only on file read errors
+                results = [{
+                    "name": "No Results Found",
+                    "unit": "N/A",
+                    "value": 0
+                }]
 
         # Ensure output directory exists
         output_path = Path(args.output_file)

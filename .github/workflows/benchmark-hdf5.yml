@@ -223,7 +223,29 @@ jobs:
     - name: Parse benchmark results
       if: steps.check-hash.outputs.skip_tests != 'true'
       run: |
-        python3 scripts/parse_cgns_benchmark.py benchmark_results/benchmark_output.txt benchmark-results.json --verbose
+        echo "=== Parsing benchmark results ===" | tee parse_debug.log
+        echo "Input file info:" | tee -a parse_debug.log
+        if [ -f "benchmark_results/benchmark_output.txt" ]; then
+          echo "  File exists: benchmark_results/benchmark_output.txt" | tee -a parse_debug.log
+          echo "  File size: $(wc -c < benchmark_results/benchmark_output.txt) bytes" | tee -a parse_debug.log
+          echo "  File lines: $(wc -l < benchmark_results/benchmark_output.txt) lines" | tee -a parse_debug.log
+          echo "  First 5 lines:" | tee -a parse_debug.log
+          head -5 benchmark_results/benchmark_output.txt | sed 's/^/    /' | tee -a parse_debug.log
+        else
+          echo "  File does not exist: benchmark_results/benchmark_output.txt" | tee -a parse_debug.log
+        fi
+        echo "" | tee -a parse_debug.log
+
+        echo "Running parser with verbose output:" | tee -a parse_debug.log
+        python3 scripts/parse_cgns_benchmark.py benchmark_results/benchmark_output.txt benchmark-results.json --verbose 2>&1 | tee -a parse_debug.log
+
+        echo "=== Parse completed ===" | tee -a parse_debug.log
+        if [ -f "benchmark-results.json" ]; then
+          echo "Output file created successfully" | tee -a parse_debug.log
+          echo "Output file size: $(wc -c < benchmark-results.json) bytes" | tee -a parse_debug.log
+        else
+          echo "ERROR: Output file not created" | tee -a parse_debug.log
+        fi
 
     - name: Store benchmark result
       if: steps.check-hash.outputs.skip_tests != 'true'
@@ -266,3 +288,27 @@ jobs:
           benchmark-results.json
           benchmark_results/*.cgns
           benchmark_results/timing_*.dat
+          benchmark_results/benchmark_script_local.sh
+          scripts/parse_cgns_benchmark.py
+          parse_debug.log
+
+    - name: Upload debug artifacts (when tests skipped)
+      uses: actions/upload-artifact@v4
+      if: steps.check-hash.outputs.skip_tests == 'true'
+      with:
+        name: debug-info-skipped
+        path: |
+          scripts/parse_cgns_benchmark.py
+          benchmark_script.sh
+
+    - name: Upload debug artifacts (on failure)
+      uses: actions/upload-artifact@v4
+      if: failure()
+      with:
+        name: debug-info-failure
+        path: |
+          benchmark_results/benchmark_output.txt
+          benchmark-results.json
+          scripts/parse_cgns_benchmark.py
+          parse_debug.log
+          benchmark_script.sh
