@@ -93,6 +93,7 @@ def parse_cgns_output(filename):
         # - Write performance: X.X MB/s
 
         # Extract timing data and throughput from the benchmark output
+        # First try the old format (direct timing output)
         total_write_match = re.search(r'Total write time: ([\d.]+) seconds', section)
         throughput_match = re.search(r'Write performance: ([\d.]+) MB/s', section)
 
@@ -119,20 +120,101 @@ def parse_cgns_output(filename):
                 "unit": "seconds",
                 "value": 0.0
             })
-        else:
-            print(f"  No 'Total write time' found in {test_name}")
 
-        # Add throughput data if available
-        if throughput_match:
-            throughput_value = float(throughput_match.group(1))
-            print(f"  Found write throughput: {throughput_value} MB/s")
-            results.append({
-                "name": f"{test_name}: Write throughput",
-                "unit": "MB/s",
-                "value": throughput_value
-            })
+            # Add throughput data if available
+            if throughput_match:
+                throughput_value = float(throughput_match.group(1))
+                print(f"  Found write throughput: {throughput_value} MB/s")
+                results.append({
+                    "name": f"{test_name}: Write throughput",
+                    "unit": "MB/s",
+                    "value": throughput_value
+                })
         else:
-            print(f"  No 'Write performance' found in {test_name}")
+            # Try new format (timing.dat format embedded in output)
+            print(f"  No 'Total write time' found in {test_name}, trying timing.dat format")
+
+            # Look for timing data lines that match the timing.dat format
+            # Format: total_time write_coord write_elem write_field write_array read_coord read_elem read_field read_array ...
+            timing_lines = []
+            for line in section.split('\n'):
+                line = line.strip()
+                # Skip comments and empty lines
+                if line and not line.startswith('#') and not line.startswith('Timing data'):
+                    # Check if this looks like a timing data line (starts with a number)
+                    if re.match(r'^\s*[\d.]+', line):
+                        timing_lines.append(line)
+
+            print(f"  Found {len(timing_lines)} timing data lines")
+
+            for timing_line in timing_lines:
+                try:
+                    values = timing_line.strip().split()
+                    if len(values) >= 9:  # Ensure we have enough values for basic timing data
+                        total_time = float(values[0])
+                        write_coord = float(values[1])
+                        write_elem = float(values[2])
+                        write_field = float(values[3])
+                        write_array = float(values[4])
+                        read_coord = float(values[5])
+                        read_elem = float(values[6])
+                        read_field = float(values[7])
+                        read_array = float(values[8])
+
+                        # Calculate derived metrics
+                        total_write_time = write_coord + write_elem + write_field + write_array
+                        total_read_time = read_coord + read_elem + read_field + read_array
+
+                        print(f"  Parsed timing data: total={total_time}s, write={total_write_time}s, read={total_read_time}s")
+
+                        # Add timing metrics
+                        results.append({
+                            "name": f"{test_name}: Total time",
+                            "unit": "seconds",
+                            "value": total_time
+                        })
+
+                        results.append({
+                            "name": f"{test_name}: Write time",
+                            "unit": "seconds",
+                            "value": total_write_time
+                        })
+
+                        results.append({
+                            "name": f"{test_name}: Read time",
+                            "unit": "seconds",
+                            "value": total_read_time
+                        })
+
+                        # Calculate throughput if we have memory data (positions 13-16)
+                        if len(values) >= 17:
+                            try:
+                                mb_coord = float(values[13])
+                                mb_elem = float(values[14])
+                                mb_field = float(values[15])
+                                mb_array = float(values[16])
+                                total_data_mb = mb_coord + mb_elem + mb_field + mb_array
+
+                                if total_write_time > 0:
+                                    write_throughput = total_data_mb / total_write_time
+                                    print(f"  Calculated write throughput: {write_throughput:.1f} MB/s")
+                                    results.append({
+                                        "name": f"{test_name}: Write throughput",
+                                        "unit": "MB/s",
+                                        "value": write_throughput
+                                    })
+                            except (ValueError, IndexError):
+                                print(f"  Could not calculate throughput from memory data")
+
+                        # Only process the first valid timing line per test section
+                        break
+
+                except (ValueError, IndexError) as e:
+                    print(f"  Could not parse timing line '{timing_line[:50]}...': {e}")
+                    continue
+
+            if not timing_lines:
+                print(f"  No timing data found in {test_name}")
 
         # Skip file size and performance information as requested - only time data in seconds
 
