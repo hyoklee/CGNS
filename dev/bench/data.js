@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1759300067834,
+  "lastUpdate": 1759472904469,
   "repoUrl": "https://github.com/hyoklee/CGNS",
   "entries": {
     "CGNS HDF5 Performance": [
@@ -1023,6 +1023,108 @@ window.BENCHMARK_DATA = {
           {
             "name": "Test 4: Write throughput",
             "value": 625,
+            "unit": "MB/s"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "name": "H. Joe Lee",
+            "username": "hyoklee",
+            "email": "hyoklee@hdfgroup.org"
+          },
+          "committer": {
+            "name": "H. Joe Lee",
+            "username": "hyoklee",
+            "email": "hyoklee@hdfgroup.org"
+          },
+          "id": "ce1822dc300b69f86e61a336d1ec4be6fe96c520",
+          "message": "ci: clean up benchmark action",
+          "timestamp": "2025-09-20T22:29:17Z",
+          "url": "https://github.com/hyoklee/CGNS/commit/ce1822dc300b69f86e61a336d1ec4be6fe96c520"
+        },
+        "date": 1759472903753,
+        "tool": "customSmallerIsBetter",
+        "benches": [
+          {
+            "name": "Test 1: Total time",
+            "value": 0.027,
+            "unit": "seconds"
+          },
+          {
+            "name": "Test 1: Write time",
+            "value": 0.009000000000000001,
+            "unit": "seconds"
+          },
+          {
+            "name": "Test 1: Read time",
+            "value": 0.002,
+            "unit": "seconds"
+          },
+          {
+            "name": "Test 1: Write throughput",
+            "value": 555.5555555555555,
+            "unit": "MB/s"
+          },
+          {
+            "name": "Test 2: Total time",
+            "value": 0.03,
+            "unit": "seconds"
+          },
+          {
+            "name": "Test 2: Write time",
+            "value": 0.009000000000000001,
+            "unit": "seconds"
+          },
+          {
+            "name": "Test 2: Read time",
+            "value": 0.002,
+            "unit": "seconds"
+          },
+          {
+            "name": "Test 2: Write throughput",
+            "value": 555.5555555555555,
+            "unit": "MB/s"
+          },
+          {
+            "name": "Test 3: Total time",
+            "value": 0.03,
+            "unit": "seconds"
+          },
+          {
+            "name": "Test 3: Write time",
+            "value": 0.009000000000000001,
+            "unit": "seconds"
+          },
+          {
+            "name": "Test 3: Read time",
+            "value": 0.003,
+            "unit": "seconds"
+          },
+          {
+            "name": "Test 3: Write throughput",
+            "value": 555.5555555555555,
+            "unit": "MB/s"
+          },
+          {
+            "name": "Test 4: Total time",
+            "value": 0.031,
+            "unit": "seconds"
+          },
+          {
+            "name": "Test 4: Write time",
+            "value": 0.01,
+            "unit": "seconds"
+          },
+          {
+            "name": "Test 4: Read time",
+            "value": 0.002,
+            "unit": "seconds"
+          },
+          {
+            "name": "Test 4: Write throughput",
+            "value": 500,
             "unit": "MB/s"
           }
         ]
