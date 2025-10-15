@@ -25,7 +25,7 @@ jobs:
           python3-pip build-essential cmake \
           zlib1g-dev libcurl4-openssl-dev \
           autotools-dev autoconf automake libtool \
-          pkg-config gfortran
+          pkg-config gfortran libopenmpi-dev
 
     - name: Install Python dependencies
       run: |
@@ -80,7 +80,7 @@ jobs:
         cmake .. \
           -DCMAKE_INSTALL_PREFIX=$HOME/hdf5-install \
           -DCMAKE_BUILD_TYPE=Release \
-          -DHDF5_ENABLE_PARALLEL=OFF \
+          -DHDF5_ENABLE_PARALLEL=ON \
           -DHDF5_ENABLE_SUBFILING_VFD=OFF \
           -DHDF5_ENABLE_ZLIB_SUPPORT=ON \
           -DHDF5_BUILD_TOOLS=OFF \
@@ -109,7 +109,7 @@ jobs:
           -DCMAKE_INSTALL_PREFIX=$HOME/cgns-install \
           -DCMAKE_BUILD_TYPE=Release \
           -DCGNS_ENABLE_HDF5=ON \
-          -DCGNS_ENABLE_PARALLEL=OFF \
+          -DCGNS_ENABLE_PARALLEL=ON \
           -DCGNS_ENABLE_TESTS=ON \
           -DHDF5_DIR=$HOME/hdf5-install
 
