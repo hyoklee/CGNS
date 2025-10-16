@@ -67,3 +67,6 @@ timing_*.dat
 build/
 hdf5/
 
+#Ignore vscode AI rules
+.github/instructions/codacy.instructions.md
+

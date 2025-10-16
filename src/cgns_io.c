@@ -23,7 +23,7 @@ freely, subject to the following restrictions:
 #define _XOPEN_SOURCE 600
 #endif
 #endif
-#ifndef _WIN32
+#if !defined(_WIN32) && !defined(_POSIX_C_SOURCE)
   #define _POSIX_C_SOURCE 200112L
 #endif
 #include <stdio.h>
@@ -558,6 +558,17 @@ int cgio_configure (int what, void *value)
     if (what > 200) {
 #if CG_BUILD_HDF5
         ADFH_Configure(what-200, value, &ierr);
+#else
+        /* Handle HDF5-specific options when HDF5 is not available */
+        if (what == 401) {  /* CG_CONFIG_GET_MAXIMUM_FILES */
+            /* Return ADF MAXIMUM_FILES constant */
+#ifdef NEW_ID_MAPPING
+            *(int *)value = 0xfff;   /* 4095 */
+#else
+            *(int *)value = 0x3fff;  /* 16383 */
+#endif
+            ierr = CGIO_ERR_NONE;
+        }
 #endif
     }
 /* nothing here yet

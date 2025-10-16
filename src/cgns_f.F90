@@ -3601,6 +3601,7 @@ MODULE cgns
   END INTERFACE
 
 #if CG_BUILD_PARALLEL_F
+
   INTERFACE cgp_particle_coord_write_data_f
      MODULE PROCEDURE cgp_particle_coord_write_data_f0
      MODULE PROCEDURE cgp_particle_coord_write_data_f1
@@ -4065,6 +4066,128 @@ MODULE cgns
   END INTERFACE
 
 #if CG_BUILD_PARALLEL_F
+  INTERFACE
+     INTEGER(C_INT) FUNCTION cgp_coord_general_write_data(fn, B, Z, C, rmin, rmax, &
+          m_type, m_numdim, m_arg_dimvals, m_rmin, m_rmax, &
+          coords) BIND(C, name="cgp_coord_general_write_data")
+       IMPORT :: C_INT, C_PTR, CGSIZE_T, CGENUM_T
+       IMPLICIT NONE
+       INTEGER(C_INT), VALUE :: fn
+       INTEGER(C_INT), VALUE :: B
+       INTEGER(C_INT), VALUE :: Z
+       INTEGER(C_INT), VALUE :: C
+       TYPE(C_PTR), VALUE :: rmin
+       TYPE(C_PTR), VALUE :: rmax
+       INTEGER(CGENUM_T), VALUE :: m_type
+       INTEGER(CGSIZE_T), VALUE :: m_numdim
+       TYPE(C_PTR), VALUE :: m_arg_dimvals
+       TYPE(C_PTR), VALUE :: m_rmin
+       TYPE(C_PTR), VALUE :: m_rmax
+       TYPE(C_PTR), VALUE :: coords
+     END FUNCTION cgp_coord_general_write_data
+  END INTERFACE
+
+  INTERFACE
+     INTEGER(C_INT) FUNCTION cgp_coord_general_read_data(fn, B, Z, C, rmin, rmax, &
+          m_type, m_numdim, m_arg_dimvals, m_rmin, m_rmax, &
+          coords) BIND(C, name="cgp_coord_general_read_data")
+       IMPORT :: C_INT, C_PTR, CGSIZE_T, CGENUM_T
+       IMPLICIT NONE
+       INTEGER(C_INT), VALUE :: fn
+       INTEGER(C_INT), VALUE :: B
+       INTEGER(C_INT), VALUE :: Z
+       INTEGER(C_INT), VALUE :: C
+       TYPE(C_PTR), VALUE :: rmin
+       TYPE(C_PTR), VALUE :: rmax
+       INTEGER(CGENUM_T), VALUE :: m_type
+       INTEGER(CGSIZE_T), VALUE :: m_numdim
+       TYPE(C_PTR), VALUE :: m_arg_dimvals
+       TYPE(C_PTR), VALUE :: m_rmin
+       TYPE(C_PTR), VALUE :: m_rmax
+       TYPE(C_PTR), VALUE :: coords
+     END FUNCTION cgp_coord_general_read_data
+  END INTERFACE
+
+  INTERFACE
+     INTEGER(C_INT) FUNCTION cgp_field_general_write_data(fn, B, Z, S, F, rmin, rmax, &
+          m_type, m_numdim, m_arg_dimvals, m_rmin, m_rmax, &
+          field) BIND(C, name="cgp_field_general_write_data")
+       IMPORT :: C_INT, C_PTR, CGSIZE_T, CGENUM_T
+       IMPLICIT NONE
+       INTEGER(C_INT), VALUE :: fn
+       INTEGER(C_INT), VALUE :: B
+       INTEGER(C_INT), VALUE :: Z
+       INTEGER(C_INT), VALUE :: S
+       INTEGER(C_INT), VALUE :: F
+       TYPE(C_PTR), VALUE :: rmin
+       TYPE(C_PTR), VALUE :: rmax
+       INTEGER(CGENUM_T), VALUE :: m_type
+       INTEGER(CGSIZE_T), VALUE :: m_numdim
+       TYPE(C_PTR), VALUE ::  m_arg_dimvals
+       TYPE(C_PTR), VALUE ::  m_rmin
+       TYPE(C_PTR), VALUE ::  m_rmax
+       TYPE(C_PTR), VALUE :: field
+     END FUNCTION cgp_field_general_write_data
+  END INTERFACE
+
+  INTERFACE
+     INTEGER(C_INT) FUNCTION cgp_field_general_read_data(fn, B, Z, S, F, rmin, rmax, &
+          m_type, m_numdim, m_arg_dimvals, m_rmin, m_rmax, &
+          field) BIND(C, name="cgp_field_general_read_data")
+       IMPORT :: C_INT, C_PTR, CGSIZE_T, CGENUM_T
+       IMPLICIT NONE
+       INTEGER(C_INT), VALUE :: fn
+       INTEGER(C_INT), VALUE :: B
+       INTEGER(C_INT), VALUE :: Z
+       INTEGER(C_INT), VALUE :: S
+       INTEGER(C_INT), VALUE :: F
+       TYPE(C_PTR), VALUE :: rmin
+       TYPE(C_PTR), VALUE :: rmax
+       INTEGER(CGENUM_T), VALUE :: m_type
+       INTEGER(CGSIZE_T), VALUE :: m_numdim
+       TYPE(C_PTR), VALUE ::  m_arg_dimvals
+       TYPE(C_PTR), VALUE ::  m_rmin
+       TYPE(C_PTR), VALUE ::  m_rmax
+       TYPE(C_PTR), VALUE :: field
+     END FUNCTION cgp_field_general_read_data
+  END INTERFACE
+
+  INTERFACE
+     INTEGER(C_INT) FUNCTION cgp_array_general_write_data(A, rmin, rmax, &
+          m_type, m_numdim, m_arg_dimvals, m_rmin, m_rmax, &
+          DATA) BIND(C, name="cgp_array_general_write_data")
+       IMPORT :: C_INT, C_PTR, CGSIZE_T, CGENUM_T
+       IMPLICIT NONE
+       INTEGER(C_INT), VALUE :: A
+       TYPE(C_PTR), VALUE :: rmin
+       TYPE(C_PTR), VALUE :: rmax
+       INTEGER(CGENUM_T), VALUE :: m_type
+       INTEGER(CGSIZE_T), VALUE :: m_numdim
+       TYPE(C_PTR), VALUE ::  m_arg_dimvals
+       TYPE(C_PTR), VALUE ::  m_rmin
+       TYPE(C_PTR), VALUE ::  m_rmax
+       TYPE(C_PTR), VALUE :: data
+     END FUNCTION cgp_array_general_write_data
+  END INTERFACE
+
+  INTERFACE
+     INTEGER(C_INT) FUNCTION cgp_array_general_read_data(A, rmin, rmax, &
+          m_type, m_numdim, m_arg_dimvals, m_rmin, m_rmax, &
+          DATA) BIND(C, name="cgp_array_general_read_data")
+       IMPORT :: C_INT, C_PTR, CGSIZE_T, CGENUM_T
+       IMPLICIT NONE
+       INTEGER(C_INT), VALUE :: A
+       TYPE(C_PTR), VALUE :: rmin
+       TYPE(C_PTR), VALUE :: rmax
+       INTEGER(CGENUM_T), VALUE :: m_type
+       INTEGER(CGSIZE_T), VALUE :: m_numdim
+       TYPE(C_PTR), VALUE ::  m_arg_dimvals
+       TYPE(C_PTR), VALUE ::  m_rmin
+       TYPE(C_PTR), VALUE ::  m_rmax
+       TYPE(C_PTR), VALUE :: data
+     END FUNCTION cgp_array_general_read_data
+  END INTERFACE
+
   INTERFACE
      INTEGER(C_INT) FUNCTION cgp_particle_coord_write_data(fn, B, P, C, rmin, rmax, coords) &
           BIND(C, name="cgp_particle_coord_write_data")
@@ -6578,11 +6701,11 @@ CONTAINS
     INTEGER, INTENT(IN) :: fn
     INTEGER, INTENT(IN) :: B
     INTEGER, INTENT(IN) :: P
-    CHARACTER(LEN=*) , INTENT(INOUT) :: particlename
+    CHARACTER(LEN=*) , INTENT(OUT) :: particlename
     INTEGER(CGSIZE_T), INTENT(OUT)   :: nsize
     INTEGER, INTENT(OUT) :: ier
 
-    CHARACTER(LEN=LEN_TRIM(particlename)+1,KIND=C_CHAR) :: c_particlename
+    CHARACTER(len=1, kind=C_CHAR) :: c_particlename(MAX_LEN+1)
 
     INTERFACE
        INTEGER(C_INT) FUNCTION cg_particle_read(fn, B, P, particlename, nsize) BIND(C, NAME="cg_particle_read")
@@ -6703,10 +6826,10 @@ CONTAINS
       INTEGER, INTENT(IN) :: B
       INTEGER, INTENT(IN) :: P
       INTEGER, INTENT(IN) :: C
-      CHARACTER(LEN=*) :: pcoord_name
+      CHARACTER(LEN=*), INTENT(OUT) :: pcoord_name
       INTEGER, INTENT(OUT) :: ier
 
-      CHARACTER(LEN=LEN_TRIM(pcoord_name)+1, KIND=C_CHAR) :: c_pcoord_name
+      CHARACTER(len=1, kind=C_CHAR) :: c_pcoord_name(MAX_LEN+1)
 
       INTERFACE
          INTEGER(C_INT) FUNCTION cg_particle_coord_node_read(fn, B, P, C, pcoord_name) BIND(C, NAME="cg_particle_coord_node_read")
@@ -6864,11 +6987,11 @@ CONTAINS
       INTEGER, INTENT(IN) :: P
       INTEGER, INTENT(IN) :: C
       INTEGER(cgenum_t), INTENT(OUT) :: datatype
-      CHARACTER(LEN=*)     :: coordname
+      CHARACTER(LEN=*), INTENT(OUT) :: coordname
       INTEGER, INTENT(OUT) :: ier
 
       INTEGER(C_INT) :: c_datatype
-      CHARACTER(LEN=LEN_TRIM(coordname)+1, KIND=C_CHAR) :: c_coordname
+      CHARACTER(len=1, kind=C_CHAR) :: c_coordname(MAX_LEN+1)
 
       INTERFACE
           INTEGER(C_INT) FUNCTION cg_particle_coord_info(fn, B, P, C, datatype, coordname) BIND(C, NAME="cg_particle_coord_info")
@@ -7096,10 +7219,10 @@ CONTAINS
       INTEGER, INTENT(IN) :: B
       INTEGER, INTENT(IN) :: P
       INTEGER, INTENT(IN) :: S
-      CHARACTER(LEN=*)    :: solname
+      CHARACTER(LEN=*), INTENT(OUT) :: solname
       INTEGER, INTENT(OUT) :: ier
 
-      CHARACTER(LEN=LEN_TRIM(solname)+1,KIND=C_CHAR) :: c_solname
+      CHARACTER(len=1, kind=C_CHAR) :: c_solname(MAX_LEN+1)
 
       INTERFACE
           INTEGER(C_INT) FUNCTION cg_particle_sol_info(fn, B, P, S, solname) BIND(C, NAME="cg_particle_sol_info")
@@ -7358,10 +7481,10 @@ CONTAINS
       INTEGER, INTENT(IN)  :: S
       INTEGER, INTENT(IN)  :: F
       INTEGER(cgenum_t), INTENT(OUT) :: datatype
-      CHARACTER(LEN=*),  INTENT(INOUT) :: fieldname
+      CHARACTER(LEN=*),  INTENT(OUT) :: fieldname
       INTEGER, INTENT(OUT) :: ier
 
-      CHARACTER(LEN=LEN_TRIM(fieldname)+1, KIND=C_CHAR) :: c_fieldname
+      CHARACTER(len=1, kind=C_CHAR) :: c_fieldname(MAX_LEN+1)
 
      INTERFACE
           INTEGER(C_INT) FUNCTION cg_particle_field_info(fn, B, P, S, F, datatype, fieldname) BIND(C, NAME="cg_particle_field_info")
@@ -7512,10 +7635,10 @@ CONTAINS
       INTEGER, INTENT(IN) :: fn
       INTEGER, INTENT(IN) :: B
       INTEGER, INTENT(IN) :: P
-      CHARACTER(LEN=*),  INTENT(INOUT) :: pitername
+      CHARACTER(LEN=*), INTENT(OUT) :: pitername
       INTEGER, INTENT(OUT) :: ier
 
-      CHARACTER(LEN=LEN_TRIM(pitername)+1, KIND=C_CHAR) :: c_pitername
+      CHARACTER(len=1, kind=C_CHAR) :: c_pitername(MAX_LEN+1)
 
       INTERFACE
          INTEGER(C_INT) FUNCTION cg_piter_read(fn, B, P, pitername) &
@@ -7701,11 +7824,11 @@ CONTAINS
 !DEC$endif
     SUBROUTINE cg_particle_model_read_f(ModelLabel, ModelType, ier)
       IMPLICIT NONE
-      CHARACTER(LEN=*) , INTENT(INOUT) :: ModelLabel
+      CHARACTER(LEN=*), INTENT(OUT) :: ModelLabel
       INTEGER(CGENUM_T), INTENT(OUT) :: ModelType
       INTEGER, INTENT(OUT) :: ier
 
-      CHARACTER(LEN=LEN_TRIM(ModelLabel)+1,KIND=C_CHAR) :: c_ModelLabel
+      CHARACTER(len=1, kind=C_CHAR) :: c_ModelLabel(MAX_LEN+1)
 
       INTERFACE
          INTEGER(C_INT) FUNCTION cg_particle_model_read(ModelLabel, ModelType) &
@@ -7795,6 +7918,140 @@ CONTAINS
 
 
 #if CG_BUILD_PARALLEL_F
+    SUBROUTINE cgp_coord_general_write_data_f(fn, B, Z, C, rmin, rmax, &
+         m_type, m_numdim, m_arg_dimvals, m_rmin, m_rmax, &
+         coords, ier)
+      IMPLICIT NONE
+      INTEGER, INTENT(IN) :: fn
+      INTEGER, INTENT(IN) :: B
+      INTEGER, INTENT(IN) :: Z
+      INTEGER, INTENT(IN) :: C
+      TYPE(C_PTR), VALUE :: rmin
+      TYPE(C_PTR), VALUE :: rmax
+      INTEGER(CGENUM_T), INTENT(IN) :: m_type
+      INTEGER(CGSIZE_T), INTENT(IN) :: m_numdim
+      TYPE(C_PTR), VALUE :: m_arg_dimvals
+      TYPE(C_PTR), VALUE :: m_rmin
+      TYPE(C_PTR), VALUE :: m_rmax
+      TYPE(C_PTR), VALUE :: coords
+      INTEGER, INTENT(OUT) :: ier
+
+      ier = INT(cgp_coord_general_write_data(INT(fn, c_int), INT(B, c_int), INT(Z, c_int), &
+           INT(C, c_int), rmin, rmax, m_type, m_numdim, m_arg_dimvals, m_rmin, m_rmax, coords))
+
+    END SUBROUTINE cgp_coord_general_write_data_f
+
+    SUBROUTINE cgp_coord_general_read_data_f(fn, B, Z, C, rmin, rmax, &
+         m_type, m_numdim, m_arg_dimvals, m_rmin, m_rmax, &
+         coords, ier)
+      IMPLICIT NONE
+      INTEGER, INTENT(IN) :: fn
+      INTEGER, INTENT(IN) :: B
+      INTEGER, INTENT(IN) :: Z
+      INTEGER, INTENT(IN) :: C
+      TYPE(C_PTR), VALUE :: rmin
+      TYPE(C_PTR), VALUE :: rmax
+      INTEGER(CGENUM_T), INTENT(IN) :: m_type
+      INTEGER(CGSIZE_T), INTENT(IN) :: m_numdim
+      TYPE(C_PTR), VALUE :: m_arg_dimvals
+      TYPE(C_PTR), VALUE :: m_rmin
+      TYPE(C_PTR), VALUE :: m_rmax
+      TYPE(C_PTR), VALUE :: coords
+      INTEGER, INTENT(OUT) :: ier
+
+      ier = INT(cgp_coord_general_read_data(INT(fn, c_int), INT(B, c_int), INT(Z, c_int), &
+           INT(C, c_int), rmin, rmax, m_type, m_numdim, m_arg_dimvals, m_rmin, m_rmax, coords))
+
+    END SUBROUTINE cgp_coord_general_read_data_f
+
+    SUBROUTINE cgp_field_general_write_data_f(fn, B, Z, S, F, rmin, rmax, &
+         m_type, m_numdim, m_arg_dimvals, m_rmin, m_rmax, &
+         field, ier)
+      IMPLICIT NONE
+      INTEGER, INTENT(IN) :: fn
+      INTEGER, INTENT(IN) :: B
+      INTEGER, INTENT(IN) :: Z
+      INTEGER, INTENT(IN) :: S
+      INTEGER, INTENT(IN) :: F
+      TYPE(C_PTR), VALUE :: rmin
+      TYPE(C_PTR), VALUE :: rmax
+      INTEGER(CGENUM_T), INTENT(IN) :: m_type
+      INTEGER(CGSIZE_T), INTENT(IN) :: m_numdim
+      TYPE(C_PTR), VALUE :: m_arg_dimvals
+      TYPE(C_PTR), VALUE :: m_rmin
+      TYPE(C_PTR), VALUE :: m_rmax
+      TYPE(C_PTR), VALUE :: field
+      INTEGER, INTENT(OUT) :: ier
+
+      ier = INT(cgp_field_general_write_data(INT(fn, c_int), INT(B, c_int), INT(Z, c_int), &
+           INT(S, c_int), INT(F, c_int), rmin, rmax, m_type, m_numdim, m_arg_dimvals, m_rmin, m_rmax, field))
+
+    END SUBROUTINE cgp_field_general_write_data_f
+
+    SUBROUTINE cgp_field_general_read_data_f(fn, B, Z, S, F, rmin, rmax, &
+         m_type, m_numdim, m_arg_dimvals, m_rmin, m_rmax, &
+         field, ier)
+      IMPLICIT NONE
+      INTEGER, INTENT(IN) :: fn
+      INTEGER, INTENT(IN) :: B
+      INTEGER, INTENT(IN) :: Z
+      INTEGER, INTENT(IN) :: S
+      INTEGER, INTENT(IN) :: F
+      TYPE(C_PTR), VALUE :: rmin
+      TYPE(C_PTR), VALUE :: rmax
+      INTEGER(CGENUM_T), INTENT(IN) :: m_type
+      INTEGER(CGSIZE_T), INTENT(IN) :: m_numdim
+      TYPE(C_PTR), VALUE :: m_arg_dimvals
+      TYPE(C_PTR), VALUE :: m_rmin
+      TYPE(C_PTR), VALUE :: m_rmax
+      TYPE(C_PTR), VALUE :: field
+      INTEGER, INTENT(OUT) :: ier
+
+      ier = INT(cgp_field_general_read_data(INT(fn, c_int), INT(B, c_int), INT(Z, c_int), &
+           INT(S, c_int), INT(F, c_int), rmin, rmax, m_type, m_numdim, m_arg_dimvals, m_rmin, m_rmax, field))
+
+    END SUBROUTINE cgp_field_general_read_data_f
+
+    SUBROUTINE cgp_array_general_write_data_f(A, rmin, rmax, &
+         m_type, m_numdim, m_arg_dimvals, m_rmin, m_rmax, &
+         data, ier)
+      IMPLICIT NONE
+      INTEGER, INTENT(IN) :: A
+      TYPE(C_PTR), VALUE :: rmin
+      TYPE(C_PTR), VALUE :: rmax
+      INTEGER(CGENUM_T), INTENT(IN) :: m_type
+      INTEGER(CGSIZE_T), INTENT(IN) :: m_numdim
+      TYPE(C_PTR), VALUE :: m_arg_dimvals
+      TYPE(C_PTR), VALUE :: m_rmin
+      TYPE(C_PTR), VALUE :: m_rmax
+      TYPE(C_PTR), VALUE :: data
+      INTEGER, INTENT(OUT) :: ier
+
+      ier = INT(cgp_array_general_write_data(INT(A, c_int), rmin, rmax, &
+           m_type, m_numdim, m_arg_dimvals, m_rmin, m_rmax, data))
+
+    END SUBROUTINE cgp_array_general_write_data_f
+
+    SUBROUTINE cgp_array_general_read_data_f(A, rmin, rmax, &
+         m_type, m_numdim, m_arg_dimvals, m_rmin, m_rmax, &
+         data, ier)
+      IMPLICIT NONE
+      INTEGER, INTENT(IN) :: A
+      TYPE(C_PTR), VALUE :: rmin
+      TYPE(C_PTR), VALUE :: rmax
+      INTEGER(CGENUM_T), INTENT(IN) :: m_type
+      INTEGER(CGSIZE_T), INTENT(IN) :: m_numdim
+      TYPE(C_PTR), VALUE :: m_arg_dimvals
+      TYPE(C_PTR), VALUE :: m_rmin
+      TYPE(C_PTR), VALUE :: m_rmax
+      TYPE(C_PTR), VALUE :: data
+      INTEGER, INTENT(OUT) :: ier
+
+      ier = INT(cgp_array_general_read_data(INT(A, c_int), rmin, rmax, &
+           m_type, m_numdim, m_arg_dimvals, m_rmin, m_rmax, data))
+
+    END SUBROUTINE cgp_array_general_read_data_f
+
     SUBROUTINE cgp_particle_coord_write_f(fn, B, P, datatype, coordname, C, ier)
       IMPLICIT NONE
       INTEGER, INTENT(IN) :: fn
