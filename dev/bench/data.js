@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1761253162846,
+  "lastUpdate": 1761253973943,
   "repoUrl": "https://github.com/hyoklee/CGNS",
   "entries": {
     "CGNS HDF5 Performance": [
@@ -2854,6 +2854,110 @@ window.BENCHMARK_DATA = {
           {
             "name": "Test 4: Total time",
             "value": 0.029,
+            "unit": "seconds"
+          },
+          {
+            "name": "Test 4: Write time",
+            "value": 0.007,
+            "unit": "seconds"
+          },
+          {
+            "name": "Test 4: Read time",
+            "value": 0.002,
+            "unit": "seconds"
+          },
+          {
+            "name": "Test 4: Write throughput",
+            "value": 714.2857142857142,
+            "unit": "MB/s"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "hyoklee@hdfgroup.org",
+            "name": "H. Joe Lee",
+            "username": "hyoklee"
+          },
+          "committer": {
+            "email": "hyoklee@hdfgroup.org",
+            "name": "H. Joe Lee",
+            "username": "hyoklee"
+          },
+          "distinct": true,
+          "id": "941ea310c1ad8be0fb6c57032df1f12324f8e257",
+          "message": "Fix parallel benchmark build by adding HDF5_NEED_MPI flag\n\nThe ptests directory was not being built because CGNS requires\nHDF5_NEED_MPI=ON to enable parallel support when using HDF5.\n\nChanges:\n- Add -DHDF5_NEED_MPI=ON to CMake configuration in workflow\n- Update documentation with correct build instructions\n- Add troubleshooting section explaining this requirement\n- Update CMake cache grep to include MPI variables\n\nThis fixes the \"ptests directory not found\" error in the workflow.\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)\n\nCo-Authored-By: Claude <noreply@anthropic.com>",
+          "timestamp": "2025-10-23T16:06:48-05:00",
+          "tree_id": "cf1837be17195c11d0c497ab29bb9ba67338ec8d",
+          "url": "https://github.com/hyoklee/CGNS/commit/941ea310c1ad8be0fb6c57032df1f12324f8e257"
+        },
+        "date": 1761253972748,
+        "tool": "customSmallerIsBetter",
+        "benches": [
+          {
+            "name": "Test 1: Total time",
+            "value": 0.027,
+            "unit": "seconds"
+          },
+          {
+            "name": "Test 1: Write time",
+            "value": 0.008,
+            "unit": "seconds"
+          },
+          {
+            "name": "Test 1: Read time",
+            "value": 0.002,
+            "unit": "seconds"
+          },
+          {
+            "name": "Test 1: Write throughput",
+            "value": 625,
+            "unit": "MB/s"
+          },
+          {
+            "name": "Test 2: Total time",
+            "value": 0.029,
+            "unit": "seconds"
+          },
+          {
+            "name": "Test 2: Write time",
+            "value": 0.008,
+            "unit": "seconds"
+          },
+          {
+            "name": "Test 2: Read time",
+            "value": 0.002,
+            "unit": "seconds"
+          },
+          {
+            "name": "Test 2: Write throughput",
+            "value": 625,
+            "unit": "MB/s"
+          },
+          {
+            "name": "Test 3: Total time",
+            "value": 0.03,
+            "unit": "seconds"
+          },
+          {
+            "name": "Test 3: Write time",
+            "value": 0.008,
+            "unit": "seconds"
+          },
+          {
+            "name": "Test 3: Read time",
+            "value": 0.002,
+            "unit": "seconds"
+          },
+          {
+            "name": "Test 3: Write throughput",
+            "value": 625,
+            "unit": "MB/s"
+          },
+          {
+            "name": "Test 4: Total time",
+            "value": 0.028,
             "unit": "seconds"
           },
           {
