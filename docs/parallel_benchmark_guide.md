@@ -83,8 +83,13 @@ After running the local benchmark:
 
 - `benchmark_results/benchmark_output.txt`: Full benchmark output
 - `benchmark_results/benchmark-results.json`: Parsed results for visualization
-- `benchmark_results/timing_*.dat`: Individual test timing data
+- `benchmark_results/timing_*.dat`: Individual test timing data (copied from `timing_NNNNNN_MODE.dat`)
 - `benchmark_results/*.cgns`: Generated CGNS files
+
+**Note**: The parallel benchmark creates timing files with the format `timing_{nprocs:06d}_{mode}.dat` where:
+- `nprocs` is the number of MPI processes (e.g., `000002` for 2 processes)
+- `mode` is the I/O mode: `COLL` for collective or `IND` for independent
+- Example: `timing_000002_COLL.dat` for 2-process collective I/O
 
 ## Visualizing Results
 

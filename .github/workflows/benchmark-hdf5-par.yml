@@ -175,40 +175,49 @@ jobs:
         # Test 1: Small mesh test (32K elements, parallel)
         echo "=== Test 1: Small Mesh Test (32K elements, parallel) ===" | tee -a benchmark_output.txt
         mpiexec -np 2 "$BENCHMARK_EXE" -nelem 32768 | tee -a benchmark_output.txt
-        if [ -f "timing.dat" ]; then
+        # Parallel benchmark creates timing_NNNNNN_MODE.dat files
+        TIMING_FILE=$(ls timing_*.dat 2>/dev/null | head -1)
+        if [ -n "$TIMING_FILE" ]; then
           echo "Timing data for 32K elements:" | tee -a benchmark_output.txt
-          cat timing.dat | tee -a benchmark_output.txt
-          cp timing.dat timing_32k.dat
+          cat "$TIMING_FILE" | tee -a benchmark_output.txt
+          cp "$TIMING_FILE" timing_32k.dat
+          rm -f timing_*.dat  # Clean up for next test
         fi
         echo "" | tee -a benchmark_output.txt
 
         # Test 2: Medium mesh test (128K elements, parallel)
         echo "=== Test 2: Medium Mesh Test (128K elements, parallel) ===" | tee -a benchmark_output.txt
         mpiexec -np 2 "$BENCHMARK_EXE" -nelem 131072 | tee -a benchmark_output.txt
-        if [ -f "timing.dat" ]; then
+        TIMING_FILE=$(ls timing_*.dat 2>/dev/null | head -1)
+        if [ -n "$TIMING_FILE" ]; then
           echo "Timing data for 128K elements:" | tee -a benchmark_output.txt
-          cat timing.dat | tee -a benchmark_output.txt
-          cp timing.dat timing_128k.dat
+          cat "$TIMING_FILE" | tee -a benchmark_output.txt
+          cp "$TIMING_FILE" timing_128k.dat
+          rm -f timing_*.dat
         fi
         echo "" | tee -a benchmark_output.txt
 
         # Test 3: Large mesh test (512K elements, parallel)
         echo "=== Test 3: Large Mesh Test (512K elements, parallel) ===" | tee -a benchmark_output.txt
         mpiexec -np 2 "$BENCHMARK_EXE" -nelem 524288 | tee -a benchmark_output.txt
-        if [ -f "timing.dat" ]; then
+        TIMING_FILE=$(ls timing_*.dat 2>/dev/null | head -1)
+        if [ -n "$TIMING_FILE" ]; then
           echo "Timing data for 512K elements:" | tee -a benchmark_output.txt
-          cat timing.dat | tee -a benchmark_output.txt
-          cp timing.dat timing_512k.dat
+          cat "$TIMING_FILE" | tee -a benchmark_output.txt
+          cp "$TIMING_FILE" timing_512k.dat
+          rm -f timing_*.dat
         fi
         echo "" | tee -a benchmark_output.txt
 
         # Test 4: Very large mesh test (1M elements, parallel)
         echo "=== Test 4: Very Large Mesh Test (1M elements, parallel) ===" | tee -a benchmark_output.txt
         mpiexec -np 2 "$BENCHMARK_EXE" -nelem 1048576 | tee -a benchmark_output.txt
-        if [ -f "timing.dat" ]; then
+        TIMING_FILE=$(ls timing_*.dat 2>/dev/null | head -1)
+        if [ -n "$TIMING_FILE" ]; then
           echo "Timing data for 1M elements:" | tee -a benchmark_output.txt
-          cat timing.dat | tee -a benchmark_output.txt
-          cp timing.dat timing_1m.dat
+          cat "$TIMING_FILE" | tee -a benchmark_output.txt
+          cp "$TIMING_FILE" timing_1m.dat
+          rm -f timing_*.dat
         fi
         echo "" | tee -a benchmark_output.txt
 
