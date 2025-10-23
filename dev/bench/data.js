@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1761201015921,
+  "lastUpdate": 1761253162846,
   "repoUrl": "https://github.com/hyoklee/CGNS",
   "entries": {
     "CGNS HDF5 Performance": [
@@ -2745,6 +2745,110 @@ window.BENCHMARK_DATA = {
           {
             "name": "Test 3: Write throughput",
             "value": 625.1249999999999,
+            "unit": "MB/s"
+          },
+          {
+            "name": "Test 4: Total time",
+            "value": 0.029,
+            "unit": "seconds"
+          },
+          {
+            "name": "Test 4: Write time",
+            "value": 0.007,
+            "unit": "seconds"
+          },
+          {
+            "name": "Test 4: Read time",
+            "value": 0.002,
+            "unit": "seconds"
+          },
+          {
+            "name": "Test 4: Write throughput",
+            "value": 714.2857142857142,
+            "unit": "MB/s"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "hyoklee@hdfgroup.org",
+            "name": "H. Joe Lee",
+            "username": "hyoklee"
+          },
+          "committer": {
+            "email": "hyoklee@hdfgroup.org",
+            "name": "H. Joe Lee",
+            "username": "hyoklee"
+          },
+          "distinct": true,
+          "id": "fb5ea2a10861b2b5b017644e8efb46bbc2e8d5aa",
+          "message": "Add parallel benchmark workflow and tools\n\n- Create benchmark-hdf5-par.yml workflow for parallel benchmarks\n- Add run_local_parallel_benchmark.sh for local testing\n- Add visualize_parallel_benchmark.py for data visualization\n- Add comprehensive documentation in parallel_benchmark_guide.md\n\nThe parallel workflow uses src/ptests/benchmark_hdf5 with 2 MPI\nprocesses and publishes results to dev/bench_par in gh-pages branch.\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)\n\nCo-Authored-By: Claude <noreply@anthropic.com>",
+          "timestamp": "2025-10-23T15:54:39-05:00",
+          "tree_id": "fb3ff332d90b688c762ee5ed5abac95f865967ae",
+          "url": "https://github.com/hyoklee/CGNS/commit/fb5ea2a10861b2b5b017644e8efb46bbc2e8d5aa"
+        },
+        "date": 1761253162105,
+        "tool": "customSmallerIsBetter",
+        "benches": [
+          {
+            "name": "Test 1: Total time",
+            "value": 0.026,
+            "unit": "seconds"
+          },
+          {
+            "name": "Test 1: Write time",
+            "value": 0.007,
+            "unit": "seconds"
+          },
+          {
+            "name": "Test 1: Read time",
+            "value": 0.002,
+            "unit": "seconds"
+          },
+          {
+            "name": "Test 1: Write throughput",
+            "value": 714.2857142857142,
+            "unit": "MB/s"
+          },
+          {
+            "name": "Test 2: Total time",
+            "value": 0.029,
+            "unit": "seconds"
+          },
+          {
+            "name": "Test 2: Write time",
+            "value": 0.007,
+            "unit": "seconds"
+          },
+          {
+            "name": "Test 2: Read time",
+            "value": 0.002,
+            "unit": "seconds"
+          },
+          {
+            "name": "Test 2: Write throughput",
+            "value": 714.2857142857142,
+            "unit": "MB/s"
+          },
+          {
+            "name": "Test 3: Total time",
+            "value": 0.028,
+            "unit": "seconds"
+          },
+          {
+            "name": "Test 3: Write time",
+            "value": 0.007,
+            "unit": "seconds"
+          },
+          {
+            "name": "Test 3: Read time",
+            "value": 0.002,
+            "unit": "seconds"
+          },
+          {
+            "name": "Test 3: Write throughput",
+            "value": 714.2857142857142,
             "unit": "MB/s"
           },
           {
