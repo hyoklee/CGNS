@@ -111,11 +111,12 @@ jobs:
           -DCGNS_ENABLE_HDF5=ON \
           -DCGNS_ENABLE_PARALLEL=ON \
           -DCGNS_ENABLE_TESTS=ON \
-          -DHDF5_DIR=$HOME/hdf5-install
+          -DHDF5_DIR=$HOME/hdf5-install \
+          -DHDF5_NEED_MPI=ON
 
         # Debug: Check CMake configuration results
         echo "=== CMake Configuration Results ==="
-        grep -E "(CGNS_ENABLE_|HDF5)" CMakeCache.txt || echo "No relevant config found"
+        grep -E "(CGNS_ENABLE_|HDF5|MPI)" CMakeCache.txt || echo "No relevant config found"
 
     - name: Build CGNS
       run: |

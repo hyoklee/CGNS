@@ -54,7 +54,8 @@ cmake .. \
   -DCGNS_ENABLE_HDF5=ON \
   -DCGNS_ENABLE_PARALLEL=ON \
   -DCGNS_ENABLE_TESTS=ON \
-  -DHDF5_DIR=$HOME/hdf5-install  # Adjust path as needed
+  -DHDF5_DIR=$HOME/hdf5-install \
+  -DHDF5_NEED_MPI=ON
 
 make -j$(nproc)
 make install
@@ -191,14 +192,21 @@ Each test measures:
 
 ### Build Issues
 
-**Problem**: `benchmark_hdf5` executable not found
+**Problem**: `benchmark_hdf5` executable not found or `ptests` directory not built
 
-**Solution**: Ensure CGNS is built with parallel support:
+**Solution**: Ensure CGNS is built with parallel support AND HDF5_NEED_MPI is set:
 ```bash
 cd build
-cmake .. -DCGNS_ENABLE_PARALLEL=ON -DCGNS_ENABLE_TESTS=ON
+cmake .. \
+  -DCGNS_ENABLE_HDF5=ON \
+  -DCGNS_ENABLE_PARALLEL=ON \
+  -DCGNS_ENABLE_TESTS=ON \
+  -DHDF5_NEED_MPI=ON \
+  -DHDF5_DIR=/path/to/hdf5
 make
 ```
+
+**Important**: The `HDF5_NEED_MPI=ON` flag is required when using parallel HDF5. Without it, CGNS will not build the parallel tests even if `CGNS_ENABLE_PARALLEL=ON` is set.
 
 ### MPI Execution Issues
 
