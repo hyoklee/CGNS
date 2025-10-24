@@ -1,5 +1,5 @@
 window.BENCHMARK_DATA = {
-  "lastUpdate": 1761254783494,
+  "lastUpdate": 1761283666768,
   "repoUrl": "https://github.com/hyoklee/CGNS",
   "entries": {
     "CGNS HDF5 Performance": [
@@ -3072,6 +3072,110 @@ window.BENCHMARK_DATA = {
           {
             "name": "Test 4: Read time",
             "value": 0.001,
+            "unit": "seconds"
+          },
+          {
+            "name": "Test 4: Write throughput",
+            "value": 714.2857142857142,
+            "unit": "MB/s"
+          }
+        ]
+      },
+      {
+        "commit": {
+          "author": {
+            "email": "hyoklee@hdfgroup.org",
+            "name": "H. Joe Lee",
+            "username": "hyoklee"
+          },
+          "committer": {
+            "email": "noreply@github.com",
+            "name": "GitHub",
+            "username": "web-flow"
+          },
+          "distinct": true,
+          "id": "7d4e530568d2814740f5680afb7e49566a2e1d9a",
+          "message": "Merge branch 'CGNS:develop' into develop",
+          "timestamp": "2025-10-24T00:21:29-05:00",
+          "tree_id": "ef68f74d56ee3239df549fd118a6cfb2c07e394a",
+          "url": "https://github.com/hyoklee/CGNS/commit/7d4e530568d2814740f5680afb7e49566a2e1d9a"
+        },
+        "date": 1761283665538,
+        "tool": "customSmallerIsBetter",
+        "benches": [
+          {
+            "name": "Test 1: Total time",
+            "value": 0.027,
+            "unit": "seconds"
+          },
+          {
+            "name": "Test 1: Write time",
+            "value": 0.008,
+            "unit": "seconds"
+          },
+          {
+            "name": "Test 1: Read time",
+            "value": 0.002,
+            "unit": "seconds"
+          },
+          {
+            "name": "Test 1: Write throughput",
+            "value": 625,
+            "unit": "MB/s"
+          },
+          {
+            "name": "Test 2: Total time",
+            "value": 0.028,
+            "unit": "seconds"
+          },
+          {
+            "name": "Test 2: Write time",
+            "value": 0.008,
+            "unit": "seconds"
+          },
+          {
+            "name": "Test 2: Read time",
+            "value": 0.001,
+            "unit": "seconds"
+          },
+          {
+            "name": "Test 2: Write throughput",
+            "value": 625,
+            "unit": "MB/s"
+          },
+          {
+            "name": "Test 3: Total time",
+            "value": 0.029,
+            "unit": "seconds"
+          },
+          {
+            "name": "Test 3: Write time",
+            "value": 0.007,
+            "unit": "seconds"
+          },
+          {
+            "name": "Test 3: Read time",
+            "value": 0.002,
+            "unit": "seconds"
+          },
+          {
+            "name": "Test 3: Write throughput",
+            "value": 714.2857142857142,
+            "unit": "MB/s"
+          },
+          {
+            "name": "Test 4: Total time",
+            "value": 0.028,
+            "unit": "seconds"
+          },
+          {
+            "name": "Test 4: Write time",
+            "value": 0.007,
+            "unit": "seconds"
+          },
+          {
+            "name": "Test 4: Read time",
+            "value": 0.002,
             "unit": "seconds"
           },
           {
