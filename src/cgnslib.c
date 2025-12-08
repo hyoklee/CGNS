@@ -7107,6 +7107,13 @@ int cg_elements_general_write(int fn, int B, int Z, int S,
         }
         WRITE_ALL_INT_DATA(2, section->parelem, newelems)
 
+        /* Free parelem buffer and allocate new buffer for parface data (always 2 rows) */
+        free(newelems);
+        newelems = (cgsize_t *)malloc((size_t)(2 * newsize * sizeof(cgsize_t)));
+        if (NULL == newelems) {
+            cgi_error("Error allocating new ParentElementsPosition data");
+            return CG_ERROR;
+        }
         for (n = 0; n < 2*newsize; n++)
             newelems[n] = 0;
         oldelems = (cgsize_t *)section->parface->data;
@@ -7747,8 +7754,15 @@ int cg_poly_elements_general_write(int fn, int B, int Z, int S,
         }
         WRITE_ALL_INT_DATA(2, section->parelem, newelems)
 
-                for (n = 0; n < 2*newsize; n++)
-                newelems[n] = 0;
+        /* Free parelem buffer and allocate new buffer for parface data (always 2 rows) */
+        free(newelems);
+        newelems = (cgsize_t *)malloc((size_t)(2 * newsize * sizeof(cgsize_t)));
+        if (NULL == newelems) {
+            cgi_error("Error allocating new ParentElementsPosition data");
+            return CG_ERROR;
+        }
+        for (n = 0; n < 2*newsize; n++)
+            newelems[n] = 0;
         oldelems = (cgsize_t *)section->parface->data;
         for (num = 0, i = 0; i < 2; i++) {
             j = i * newsize + offset;
