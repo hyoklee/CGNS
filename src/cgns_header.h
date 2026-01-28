@@ -37,6 +37,9 @@ typedef char const cchar_33[33];
 typedef cgsize_t cgsize6_t[6];
 typedef int cgint3_t[3];
 
+/* Maximum buffer size for full path names (CG_MAX_GOTO_DEPTH nodes * (name_length + '/') + null terminator) */
+#define CG_FULL_PATH_BUFFER_SIZE (CG_MAX_GOTO_DEPTH*(CGIO_MAX_NAME_LENGTH+1)+1)
+
 #define MIN(a,b) (((a)<(b))?(a):(b))
 #define MAX(a,b) (((a)>(b))?(a):(b))
 
@@ -1091,6 +1094,9 @@ extern cgns_posit posit_stack[CG_MAX_GOTO_DEPTH+1];
 /*
  * Internal Functions
  */
+
+/* Internal file opening implementation used by both cg_open() and cgp_open() */
+int cgi_open(const char *filename, int mode, int open_parallel, int *fn);
 
 CGNSDLL void *cgi_malloc(size_t cnt,size_t size);
 CGNSDLL void *cgi_realloc(void *old,size_t bytes);

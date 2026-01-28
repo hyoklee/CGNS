@@ -501,9 +501,19 @@ void cgp_error_exit(void)
  * \param[in]  mode     \FILE_mode
  * \param[out] fn       \FILE_fn
  * \return \ier
- * \details Similar to cg_open() and calls that routine. The differences
+ * \details Similar to cg_open() and calls that routine. The difference
  *          is that cgp_open() explicitly sets an internal CGNS flag to
  *          indicate parallel access.
+ *
+ * \warning IMPORTANT: The library uses global state for the parallel/native access mode.
+ *          When MPI is initialized, calling cgp_open() sets the mode to PARALLEL globally.
+ *          Any subsequent calls to cg_open() in the same MPI program may also use parallel
+ *          mode until all files are closed. Mixing cgp_open() and cg_open() in the same
+ *          MPI program is not recommended and behavior is undefined.
+ *
+ * \note Multiple parallel files can be open simultaneously. Each file's HDF5 handle
+ *       maintains its own MPIO driver state independently, even though CGNS uses
+ *       global configuration at file open time. (See Issue #836)
  */
 int cgp_open(const char *filename, int mode, int *fn)
 {
@@ -515,20 +525,28 @@ int cgp_open(const char *filename, int mode, int *fn)
       cgp_mpi_comm(MPI_COMM_WORLD);
     }
 
-    /* Flag this as a parallel access */
-    strcpy(ctx_cgio.hdf5_access,"PARALLEL");
+    /* Set global parallel access mode for this file open.
+     * Note: HDF5 will remember the MPIO driver with the file handle after opening.
+     * The global state is only used at file open time to configure HDF5. */
+    ctx_cgio.hdf5_access_mode = CGIO_PARALLEL_MODE;
 
     ierr = cg_set_file_type(CG_FILE_HDF5);
     if (ierr) return ierr;
-    ierr = cg_open(filename, mode, fn);
+
+    /* Call internal implementation with open_parallel=1 to preserve PARALLEL mode */
+    ierr = cgi_open(filename, mode, 1, fn);
+
     cgns_filetype = old_type;
 
-    /* reset parallel access
-     * the global hdf5_access is only used at file opening
-     */
-    strcpy(ctx_cgio.hdf5_access,"NATIVE");
+    if (ierr) return ierr;
 
-    return ierr;
+    /* Ensure mode is PARALLEL for subsequent parallel opens (issue #836).
+     * This is technically redundant (cgi_open() preserved the PARALLEL mode we set above
+     * because open_parallel=1 was passed), but we set it explicitly here as defensive
+     * programming and to clearly document the intended state after cgp_open(). */
+    ctx_cgio.hdf5_access_mode = CGIO_PARALLEL_MODE;
+
+    return CG_OK;
 }
 
 /*---------------------------------------------------------*/
@@ -540,6 +558,10 @@ int cgp_open(const char *filename, int mode, int *fn)
  * \param[in]  fn \FILE_fn
  * \return \ier
  * \details Similar to cg_close() and calls that routine.
+ * \note IMPORTANT: This function must NOT reset ctx_cgio.hdf5_access_mode to NATIVE
+ *       as that would corrupt the access mode for other open parallel files.
+ *       HDF5 maintains the MPIO driver with each file handle, so resetting the
+ *       global state is both unnecessary and harmful. (Issue #836)
  */
 int cgp_close(int fn)
 {
@@ -1417,11 +1439,8 @@ int cgp_parent_data_write(int fn, int B, int Z, int S,
         section->parelem = CGNS_NEW(cgns_array, 1);
     }
 
-    /* Get total size across all processors */
-    cgsize_t num = end == 0 ? 0 : end - start + 1;
-    num = num < 0 ? 0 : num;
-    MPI_Datatype mpi_type = sizeof(cgsize_t) == 32 ? MPI_INT : MPI_LONG_LONG_INT;
-    MPI_Allreduce(MPI_IN_PLACE, &num, 1, mpi_type, MPI_SUM, ctx_cgio.pcg_mpi_comm);
+    /* ParentElements array must be sized to full section range */
+    cgsize_t num = section->range[1] - section->range[0] + 1;
 
     strcpy(section->parelem->data_type, CG_SIZE_DATATYPE);
     section->parelem->data_dim = 2;
@@ -1454,7 +1473,7 @@ int cgp_parent_data_write(int fn, int B, int Z, int S,
 
     if (cgi_write_array(section->id, section->parface)) return CG_ERROR;
 
-    /* ParentElements -- write data */
+    /* Calculate write range based on element numbers relative to section start */
     rmin[0] = start - section->range[0] + 1;
     rmax[0] = end - section->range[0] + 1;
     rmin[1] = 1;
@@ -1464,6 +1483,7 @@ int cgp_parent_data_write(int fn, int B, int Z, int S,
     cg_rw_t Data;
     Data.u.wbuf = parent_data;
 
+    /* Write ParentElements data */
     to_HDF_ID(section->parelem->id, hid);
     int herr = readwrite_data_parallel(hid, type, 2, rmin, rmax, &Data, CG_PAR_WRITE);
     if (herr != CG_OK)
@@ -1603,11 +1623,8 @@ int cgp_parentelements_write_data(int fn, int B, int Z, int S, cgsize_t start,
         section->parelem = CGNS_NEW(cgns_array, 1);
     }
 
-    /* Get total size across all processors */
-    cgsize_t num = end == 0 ? 0 : end - start + 1;
-    num = num < 0 ? 0 : num;
-    MPI_Datatype mpi_type = sizeof(cgsize_t) == 32 ? MPI_INT : MPI_LONG_LONG_INT;
-    MPI_Allreduce(MPI_IN_PLACE, &num, 1, mpi_type, MPI_SUM, ctx_cgio.pcg_mpi_comm);
+    /* ParentElements array must be sized to full section range */
+    cgsize_t num = section->range[1] - section->range[0] + 1;
 
     strcpy(section->parelem->data_type, CG_SIZE_DATATYPE);
     section->parelem->data_dim = 2;

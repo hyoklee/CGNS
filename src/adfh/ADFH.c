@@ -1326,7 +1326,8 @@ static char *check_name(const char *new_name, int *err)
     set_error(STRING_LENGTH_TOO_BIG, err);
     return NULL;
   }
-  strcpy(name, p);
+  strncpy(name, p, ADF_NAME_LENGTH);
+  name[ADF_NAME_LENGTH] = 0;
 
   /* remove trailing space */
 
@@ -1446,16 +1447,36 @@ static herr_t fix_dimensions(hid_t id, const char *name, const H5L_info_t* linfo
   int err;
   char type[ADF_DATA_TYPE_LENGTH+1];
 
-  if (*name != D_PREFIX && (gid = H5Gopen2(id, name, H5P_DEFAULT)) >= 0 &&
-     !get_str_att(gid, A_TYPE, type, &err) && strcmp(type, ADFH_LK)) {
-#if ADFH_HDF5_HAVE_112_API
-    H5Literate2(gid, H5_INDEX_CRT_ORDER, H5_ITER_NATIVE, NULL, fix_dimensions, NULL);
-#else
-    H5Literate(gid, H5_INDEX_CRT_ORDER, H5_ITER_NATIVE, NULL, fix_dimensions, NULL);
-#endif
-    transpose_dimensions(gid,name);
+  /* Skip names starting with D_PREFIX */
+  if (*name == D_PREFIX)
+    return 0;
+
+  /* Try to open the group */
+  gid = H5Gopen2(id, name, H5P_DEFAULT);
+  if (gid < 0)
+    return 0;
+
+  /* Get the type attribute */
+  if (get_str_att(gid, A_TYPE, type, &err) != 0) {
     H5Gclose(gid);
+    return 0;
   }
+
+  /* Skip if type is ADFH_LK */
+  if (strcmp(type, ADFH_LK) == 0) {
+    H5Gclose(gid);
+    return 0;
+  }
+
+  /* Process the group */
+#if ADFH_HDF5_HAVE_112_API
+  H5Literate2(gid, H5_INDEX_CRT_ORDER, H5_ITER_NATIVE, NULL, fix_dimensions, NULL);
+#else
+  H5Literate(gid, H5_INDEX_CRT_ORDER, H5_ITER_NATIVE, NULL, fix_dimensions, NULL);
+#endif
+  transpose_dimensions(gid,name);
+  H5Gclose(gid);
+
   return 0;
 }
 
@@ -1679,7 +1700,8 @@ void ADFH_Set_Label(const double  id,
     set_error(ADFH_ERR_LINK_DATA, err);
     return;
   }
-  strcpy(label_name, label);
+  strncpy(label_name, label, ADF_NAME_LENGTH);
+  label_name[ADF_NAME_LENGTH] = 0;
   set_str_att(hid, A_LABEL, label_name, err);
 }
 
@@ -2292,14 +2314,16 @@ void ADFH_Database_Open(const char   *name,
 #endif
 
   /* open the file */
-  access_mode = CGIO_NATIVE_MODE;
+  /* Convert format string to enum for internal use (Issue #836) */
+  access_mode = (0 == strcmp(fmt, "PARALLEL")) ? CGIO_PARALLEL_MODE : CGIO_NATIVE_MODE;
+
 #if CG_BUILD_PARALLEL
   int flag = 0;
   /* check if we are actually running a parallel program */
   MPI_Initialized(&flag);
   if(flag) {
     /* Set the access property list to use MPI */
-    if (0 == strcmp(fmt, "PARALLEL")) {
+    if (access_mode == CGIO_PARALLEL_MODE) {
 
       if(!ctx_cgio.pcg_mpi_info) ctx_cgio.pcg_mpi_info = MPI_INFO_NULL;
 #if HDF5_HAVE_COLL_METADATA  
