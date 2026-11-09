@@ -7063,7 +7063,7 @@ int cg_elements_general_write(int fn, int B, int Z, int S,
             cgi_error("Error in allocation size for new ParentElements data");
             return CG_ERROR;
         }
-        newelems = (cgsize_t *)malloc((size_t)(cnt * newsize * sizeof(cgsize_t)));
+        newelems = (cgsize_t *)malloc((size_t)cnt * (size_t)newsize * sizeof(cgsize_t));
         if (NULL == newelems) {
             cgi_error("Error allocating new ParentElements data");
             return CG_ERROR;
@@ -9699,6 +9699,19 @@ int cg_hole_read(int fn, int B, int Z, int J, cgsize_t *pnts)
     return CG_OK;
 }
 
+/**
+ * \ingroup OversetHoles
+ * \internal
+ *
+ * \brief Get the CGIO node identifier of an overset hole
+ *
+ * \param[in]  fn      \FILE_fn
+ * \param[in]  B       \B_Base
+ * \param[in]  Z       \Z_Zone
+ * \param[in]  J       Overset hole index number, where 1 ≤ J ≤ nholes.
+ * \param[out] hole_id CGIO node identifier for the overset hole.
+ * \return \ier
+ */
 int cg_hole_id(int fn, int B, int Z, int J, double *hole_id)
 {
     cgns_hole *hole;
@@ -10246,7 +10259,7 @@ int cg_conn_write(int fn, int B, int Z,  const char * connectname,
     }
     if (!(ptset_type==CGNS_ENUMV(PointRange) && npnts==2) &&
         !(ptset_type==CGNS_ENUMV(PointList) && npnts>0)) {
-        cgi_error("Invalid input:  npoint=%ld, point set type=%s",
+        cgi_error("Invalid input:  npoint=%" PRIdCGSIZE ", point set type=%s",
                npnts, PointSetTypeName[ptset_type]);
         return CG_ERROR;
     }
@@ -10771,6 +10784,19 @@ int cg_1to1_read_global(int fn, int B, char **connectname, char **zonename,
     return CG_OK;
 }
 
+/**
+ * \ingroup OneToOneConnectivity
+ * \internal
+ *
+ * \brief Get the CGIO node identifier of a 1-to-1 interface
+ *
+ * \param[in]  fn       \FILE_fn
+ * \param[in]  B        \B_Base
+ * \param[in]  Z        \Z_Zone
+ * \param[in]  J        Interface index number, where 1 ≤ J ≤ n1to1.
+ * \param[out] one21_id CGIO node identifier for the 1-to-1 interface.
+ * \return \ier
+ */
 int cg_1to1_id(int fn, int B, int Z, int J, double *one21_id)
 {
     cgns_1to1 *one21;
@@ -10847,11 +10873,11 @@ int cg_1to1_write(int fn, int B, int Z, const char * connectname,
     index_dim = zone->index_dim;
     for (i=0; i<index_dim; i++) {   /* can't check donorrange because it may not yet be written */
         if (range[i]<=0 || range[i+index_dim]>zone->nijk[i]) {
-            cgi_error("Invalid input range:  %ld->%ld",range[i], range[i+index_dim]);
+            cgi_error("Invalid input range:  %" PRIdCGSIZE "->%" PRIdCGSIZE, range[i], range[i+index_dim]);
             return CG_ERROR;
         }
         if (abs(transform[i])>index_dim) {
-            cgi_error("Invalid transformation index: %d.  The indices must all be between 1 and %ld",i, index_dim);
+            cgi_error("Invalid transformation index: %d.  The indices must all be between 1 and %" PRIdCGSIZE, i, index_dim);
             return CG_ERROR;
         }
         if (transform[i] != 0) {
@@ -10860,7 +10886,7 @@ int cg_1to1_write(int fn, int B, int Z, const char * connectname,
         dr = range[i+index_dim] - range[i];
         ddr = donor_range[j+index_dim] - donor_range[j];
         if (dr != ddr && dr != -ddr) {
-                cgi_error("Invalid input:  range = %ld->%ld and donor_range = %ld->%ld",
+                cgi_error("Invalid input:  range = %" PRIdCGSIZE "->%" PRIdCGSIZE " and donor_range = %" PRIdCGSIZE "->%" PRIdCGSIZE,
                 range[i], range[i+index_dim], donor_range[j], donor_range[j+index_dim]);
                 return CG_ERROR;
             }
@@ -11133,6 +11159,19 @@ int cg_boco_read(int fn, int B, int Z, int BC, cgsize_t *pnts, void *NormalList)
     return CG_OK;
 }
 
+/**
+ * \ingroup BoundaryConditionType
+ * \internal
+ *
+ * \brief Get the CGIO node identifier of a boundary condition
+ *
+ * \param[in]  fn      \FILE_fn
+ * \param[in]  B       \B_Base
+ * \param[in]  Z       \Z_Zone
+ * \param[in]  BC      \BC
+ * \param[out] boco_id CGIO node identifier for the boundary condition.
+ * \return \ier
+ */
 int cg_boco_id(int fn, int B, int Z, int BC, double *boco_id)
 {
     cgns_boco *boco;
@@ -11274,7 +11313,7 @@ int cg_boco_write(int fn, int B, int Z, const char * boconame,
           ptype == CGNS_ENUMV(ElementList)) && npnts <= 0) ||
         ((ptype == CGNS_ENUMV(PointRange) ||
           ptype == CGNS_ENUMV(ElementRange)) && npnts != 2)) {
-        cgi_error("Invalid input:  npoint=%ld, point set type=%s",
+        cgi_error("Invalid input:  npoint=%" PRIdCGSIZE ", point set type=%s",
                    npnts, PointSetTypeName[ptype]);
         return CG_ERROR;
     }
@@ -17165,7 +17204,7 @@ int cg_particle_governing_write(CGNS_ENUMT(ParticleGoverningEquationsType_t) Par
  *                                 LinearSpringDashpot, Pair, HertzMindlin, HertzKuwabaraKono, ORourke, Stochastic, NonStochastic, NTC
  *	ParticleBreakupModel_t		     CG_Null, CG_UserDefined, KelvinHelmholtz, KelvinHelmholtzACT, RayleighTaylor,
  *                                 KelvinHelmholtzRayleighTaylor, ReitzKHRT, TAB, ETAB, LISA, SHF, PilchErdman, ReitzDiwakar
- *	ParticleForceModel_t		        CG_Null, CG_UserDefined, Sphere, NonShpere, Tracer, BeetstraVanDerHoefKuipers, Ergun,
+ *	ParticleForceModel_t		        CG_Null, CG_UserDefined, Sphere, NonSphere, Tracer, BeetstraVanDerHoefKuipers, Ergun,
  *                                 CliftGrace, Gidaspow, HaiderLevenspiel, PlessisMasliyah, SyamlalOBrien, SaffmanMei,
  *                                 TennetiGargSubramaniam, Tomiyama, Stokes, StokesCunningham, WenYu
  *	ParticleWallInteractionModel_t  CG_Null, CG_UserDefined, Linear, NonLinear, HardSphere, SoftSphere,
@@ -17210,7 +17249,7 @@ int cg_particle_model_read(const char *ModelLabel, CGNS_ENUMT(ParticleModelType_
  *                                 Pair, HertzMindlin, HertzKuwabaraKono, ORourke, Stochastic, NonStochastic, NTC
  *	ParticleBreakupModel_t		     CG_Null, CG_UserDefined, KelvinHelmholtz, KelvinHelmholtzACT, RayleighTaylor,
  *                                 KelvinHelmholtzRayleighTaylor, ReitzKHRT, TAB, ETAB, LISA, SHF, PilchErdman, ReitzDiwakar
- *	ParticleForceModel_t		        CG_Null, CG_UserDefined, Sphere, NonShpere, Tracer, BeetstraVanDerHoefKuipers, Ergun,
+ *	ParticleForceModel_t		        CG_Null, CG_UserDefined, Sphere, NonSphere, Tracer, BeetstraVanDerHoefKuipers, Ergun,
  *                                 CliftGrace, Gidaspow, HaiderLevenspiel, PlessisMasliyah, SyamlalOBrien, SaffmanMei,
  *                                 TennetiGargSubramaniam, Tomiyama, Stokes, StokesCunningham, WenYu
  *	ParticleWallInteractionModel_t  CG_Null, CG_UserDefined, Linear, NonLinear, HardSphere, SoftSphere,
@@ -17749,7 +17788,7 @@ int cg_array_write(const char * ArrayName, CGNS_ENUMT(DataType_t) DataType,
     }
     for (n=0; n<DataDimension; n++) {
         if (DimensionVector[n]<=0) {
-            cgi_error("Invalid array size: %ld",DimensionVector[n]);
+            cgi_error("Invalid array size: %" PRIdCGSIZE, DimensionVector[n]);
             return CG_ERROR;
         }
     }
@@ -17865,7 +17904,7 @@ int cg_array_general_write(const char *arrayname,
 
     for (n=0; n<s_numdim; n++) {
         if (s_dimvals[n] < 1) {
-            cgi_error("Invalid array dimension for file: %ld", s_dimvals[n]);
+            cgi_error("Invalid array dimension for file: %" PRIdCGSIZE, s_dimvals[n]);
             return CG_ERROR;
         }
     }
@@ -19969,20 +20008,20 @@ int cg_ptset_write(CGNS_ENUMT(PointSetType_t) ptset_type, cgsize_t npnts,
 
      /* verify input */
     if(npnts == 0 || pnts == NULL) {
-    cgi_error("Invalid input:  npoint=%ld, point set type=%s",
+    cgi_error("Invalid input:  npoint=%" PRIdCGSIZE ", point set type=%s",
                    npnts, PointSetTypeName[ptset_type]);
         return CG_ERROR;
     }
 
     if (ptset_type == CGNS_ENUMV(PointList)) {
         if (npnts <= 0) {
-            cgi_error("Invalid input:  npoint=%ld, point set type=%s",
+            cgi_error("Invalid input:  npoint=%" PRIdCGSIZE ", point set type=%s",
                    npnts, PointSetTypeName[ptset_type]);
             return CG_ERROR;
         }
     } else if (ptset_type == CGNS_ENUMV(PointRange)) {
         if (npnts != 2) {
-            cgi_error("Invalid input:  npoint=%ld, point set type=%s",
+            cgi_error("Invalid input:  npoint=%" PRIdCGSIZE ", point set type=%s",
                    npnts, PointSetTypeName[ptset_type]);
             return CG_ERROR;
         }
